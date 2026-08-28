@@ -1,0 +1,89 @@
+<div class="films-page">
+    <h2>Films</h2>
+
+    <div class="toolbar">
+        <button class="primary" (click)="openCreate()">+ Add film</button>
+        <input type="search" placeholder="Search title…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onPageSizeChange($any($event.target).value)">
+            <option [selected]="pageSize() === 10">10</option>
+            <option [selected]="pageSize() === 20">20</option>
+            <option [selected]="pageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    @if (error(); as err) {
+    <div class="error">{{ err }}</div>
+    }
+
+    <table>
+        <thead>
+            <tr>
+                <th (click)="onSort('film_id')">ID {{ sortIndicator('film_id') }}</th>
+                <th (click)="onSort('title')">Title {{ sortIndicator('title') }}</th>
+                <th (click)="onSort('release_year')">Year {{ sortIndicator('release_year') }}</th>
+                <th (click)="onSort('rental_rate')">Rate {{ sortIndicator('rental_rate') }}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (film of films(); track film.film_id) {
+            <tr>
+                <td>{{ film.film_id }}</td>
+                <td>{{ film.title }}</td>
+                <td>{{ film.release_year }}</td>
+                <td>{{ film.rental_rate }}</td>
+                <td class="actions">
+                    <button (click)="editFilm(film)">Edit</button>
+                    <button class="danger" (click)="deleteFilm(film)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="5">No films match.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="page() <= 1" (click)="goToPage(page() - 1)">‹ Prev</button>
+        @for (p of pages(); track p) {
+        <button [class.active]="p === page()" (click)="goToPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
+        <span class="info">{{ total() }} films · page {{ page() }} of {{ totalPages() }}</span>
+    </div>
+
+    @if (showForm()) {
+    <div class="modal-backdrop" (click)="resetForm()">
+        <div class="modal" (click)="stopClick($event)">
+            <h3>{{ editing() ? 'Edit film' : 'New film' }}</h3>
+            <label>Title *</label>
+            <input placeholder="Film title" [value]="formTitle()" (input)="formTitle.set($any($event.target).value)" />
+            @if (titleError()) { <span class="field-error">Title is required.</span> }
+
+            <label>Release year *</label>
+            <input type="number" placeholder="e.g. 2006" [value]="formYear() ?? ''"
+                (input)="onYearInput($any($event.target).value)" />
+            @if (yearError()) { <span class="field-error">Year is required.</span> }
+
+            <label>Rental rate *</label>
+            <input type="text" placeholder="e.g. 2.50" [value]="formRate()"
+                (input)="formRate.set($any($event.target).value)" />
+            @if (rateError()) { <span class="field-error">Rate is required and must be a number.</span> }
+
+            <div class="modal-actions">
+                <button (click)="resetForm()">Cancel</button>
+                <button class="primary" [disabled]="!formValid()" (click)="saveFilm()">
+                    {{ editing() ? 'Save changes' : 'Create film' }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

@@ -1,0 +1,17 @@
+.sidebar {
+  width: 180px;
+  padding: 16px;
+  border-right: 1px solid #ddd;
+  min-height: calc(100vh - 45px);
+}
+.sidebar a {
+  display: block;
+  padding: 8px 12px;
+  color: #333;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.sidebar a.active {
+  background: #e5e7eb;
+  font-weight: bold;
+}
