@@ -1,6 +1,7 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { FilmService, FilmQuery } from './film.service';
 import { Film, FilmInput } from './film';
+import { ToastService } from '../../core/toast/toast.service';
 
 @Component({
     selector: 'app-films-page',
@@ -10,6 +11,7 @@ import { Film, FilmInput } from './film';
 })
 export class FilmsPage implements OnInit {
     private readonly filmService = inject(FilmService);
+    private readonly toast = inject(ToastService);
 
     protected readonly films = signal<Film[]>([]);
     protected readonly total = signal(0);
@@ -19,7 +21,7 @@ export class FilmsPage implements OnInit {
     protected readonly sortBy = signal<'film_id' | 'title' | 'release_year' | 'rental_rate'>('film_id');
     protected readonly sortOrder = signal<'asc' | 'desc'>('asc');
     protected readonly loading = signal(false);
-    protected readonly error = signal<string | null>(null);
+    //protected readonly error = signal<string | null>(null);
 
     protected readonly formTitle = signal('');
     protected readonly formYear = signal<number | null>(null);
@@ -69,11 +71,10 @@ export class FilmsPage implements OnInit {
             next: result => {
                 this.films.set(result.items);
                 this.total.set(result.total);
-                this.error.set(null);
                 this.loading.set(false);
             },
             error: err => {
-                this.error.set(err.message);
+                this.toast.show(err.message, 'error');
                 this.loading.set(false);
             }
         });
@@ -163,12 +164,14 @@ export class FilmsPage implements OnInit {
             ? this.filmService.updateFilm(this.editing()!.film_id, input)
             : this.filmService.createFilm(input);
 
+        const wasEditing = this.editing() !== null;
         action.subscribe({
             next: () => {
                 this.resetForm();
                 this.loadFilms();
+                this.toast.show(wasEditing ? 'Film updated' : 'Film created', 'success');
             },
-            error: err => this.error.set(err.message)
+            error: err => this.toast.show(err.message, 'error')
         });
     }
 
@@ -181,8 +184,9 @@ export class FilmsPage implements OnInit {
                 } else {
                     this.loadFilms();
                 }
+                this.toast.show(`'${film.title}' deleted`, 'success');
             },
-            error: err => this.error.set(err.message)
+            error: err => this.toast.show(err.message, 'error')
         });
     }
 

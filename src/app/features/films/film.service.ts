@@ -3,6 +3,7 @@ import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Film, TopRentedFilm, Page, FilmInput } from './film';
 
+
 export interface FilmQuery {
     page: number;
     pageSize: number;
