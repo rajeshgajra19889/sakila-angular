@@ -1,5 +1,10 @@
 # Sakila Angular
 
+![Angular](https://img.shields.io/badge/Angular%2022-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript%207-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![RxJS](https://img.shields.io/badge/RxJS%207-B7178C?style=for-the-badge&logo=reactivex&logoColor=white)
+![Angular Signals](https://img.shields.io/badge/Angular%20Signals-0F766E?style=for-the-badge)
+
 The **frontend half of a two-part full-stack project** — see its backend twin, the [Sakila Sales API](https://github.com/rajeshgajra19889/sales-api), for the Express/TypeScript/Drizzle/PostgreSQL REST layer this UI consumes. Together they form a complete stack: **Angular UI → Express API → PostgreSQL**.
 
 A feature-complete admin panel over the PostgreSQL Sakila database. Built with the modern Angular stack: **standalone components, signals, lazy routes, colocated feature modules.**
