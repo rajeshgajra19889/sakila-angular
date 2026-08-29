@@ -4,3 +4,8 @@
   padding: 12px 20px;
   font-weight: bold;
 }
+.navbar { display: flex; align-items: center; }
+.spacer { flex: 1; }
+.whoami { margin-right: 12px; font-weight: normal; font-size: 13px; opacity: .85; }
+.logout { background: rgba(255, 255, 255, .12); color: #fff; border: 1px solid rgba(255, 255, 255, .3); border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 13px; }
+.logout:hover { background: rgba(255, 255, 255, .2); }

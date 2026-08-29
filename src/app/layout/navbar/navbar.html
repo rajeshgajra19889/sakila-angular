@@ -1,3 +1,8 @@
 <header class="navbar">
   <span class="logo">Sakila</span>
+  <div class="spacer"></div>
+  @if (authService.fullName()) {
+  <span class="whoami">{{ authService.fullName() }}</span>
+  }
+  <button class="logout" (click)="logout()">Logout</button>
 </header>

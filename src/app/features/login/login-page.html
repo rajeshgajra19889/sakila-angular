@@ -1,0 +1,13 @@
+<div class="login-wrap">
+  <form class="login-card" (ngSubmit)="onSubmit()">
+    <h2>Sakila Admin</h2>
+    <label>Username</label>
+    <input placeholder="Mike" [value]="username()" (input)="username.set($any($event.target).value)" autofocus />
+    <label>Password</label>
+    <input type="password" [value]="password()" (input)="password.set($any($event.target).value)" />
+    @if (error(); as err) { <div class="error">{{ err }}</div> }
+    <button class="primary" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Signing in…' : 'Sign in' }}
+    </button>
+  </form>
+</div>
