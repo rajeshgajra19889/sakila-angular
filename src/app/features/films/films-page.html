@@ -59,7 +59,7 @@
     </div>
     @if (detailOpen()) {
     <div class="modal-backdrop" (click)="closeDetail()">
-        <div class="modal" (click)="stopClick($event)">
+        <div class="modal modal-wide" (click)="stopClick($event)">
             <h3>Film details</h3>
             @if (detailLoading()) {
             <div class="loading">Loading…</div>
@@ -76,6 +76,33 @@
                 <dt>Language</dt>
                 <dd>{{ f.language_name ?? '—' }}</dd>
             </dl>
+
+            <h4>Cast ({{ cast().length }})</h4>
+            <ul class="cast-list">
+                @for (a of cast(); track a.actor_id) {
+                <li>
+                    <span>{{ a.first_name }} {{ a.last_name }}</span>
+                    <button class="cast-remove" [disabled]="castSaving()" (click)="removeCastActor(a.actor_id)"
+                        title="Remove from cast">×</button>
+                </li>
+                } @empty {
+                <li class="muted">No cast yet — add someone below.</li>
+                }
+            </ul>
+            <div class="cast-add">
+                <input placeholder="Add actor by name…" [value]="castQuery()"
+                    (input)="onCastQuery($any($event.target).value)" />
+                @if (castQuery().trim() !== '') {
+                <ul class="suggestions">
+                    @for (m of castSuggestions(); track m.actor_id) {
+                    <li><button [disabled]="castSaving()" (click)="addCastActor(m)">
+                            {{ m.first_name }} {{ m.last_name }}</button></li>
+                    } @empty {
+                    <li class="muted">No matches.</li>
+                    }
+                </ul>
+                }
+            </div>
             }
             <div class="modal-actions">
                 <button class="primary" (click)="closeDetail()">Close</button>

@@ -101,6 +101,15 @@ th:hover {
     color: #555;
 }
 
+.toolbar .primary {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 .form {
     margin-top: 20px;
     padding: 16px;
@@ -145,6 +154,7 @@ th:hover {
     border-radius: 4px;
     cursor: pointer;
 }
+.modal-actions .primary { background: #1976d2; color: #fff; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; }
 
 .modal-backdrop {
     position: fixed;
@@ -201,6 +211,7 @@ th:hover {
     opacity: .5;
     cursor: not-allowed;
 }
+
 .detail-grid {
     display: grid;
     grid-template-columns: 120px 1fr;
@@ -216,3 +227,17 @@ th:hover {
 .detail-grid dd {
     margin: 0;
 }
+.modal-wide { width: 440px; }
+.modal h4 { margin: 14px 0 8px; }
+.cast-list { list-style: none; margin: 0 0 12px; padding: 0; max-height: 170px; overflow-y: auto; }
+.cast-list li { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+.cast-remove { border: none; background: transparent; color: #c0392b; font-size: 16px; cursor: pointer; padding: 0 6px; }
+.cast-remove:disabled { opacity: .4; cursor: not-allowed; }
+.cast-add input { margin-bottom: 4px; }
+.suggestions { list-style: none; margin: 0; padding: 0; border: 1px solid #ddd; border-radius: 4px; max-height: 140px; overflow-y: auto; }
+.suggestions li { border-bottom: 1px solid #f0f0f0; }
+.suggestions li:last-child { border-bottom: none; }
+.suggestions button { width: 100%; text-align: left; background: none; border: none; padding: 6px 10px; cursor: pointer; font-size: 13px; }
+.suggestions button:hover { background: #f0f6ff; }
+.suggestions button:disabled { opacity: .4; cursor: not-allowed; }
+.muted { color: #888; font-style: italic; }

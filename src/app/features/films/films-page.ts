@@ -2,6 +2,9 @@ import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { FilmService, FilmQuery } from './film.service';
 import { Film, FilmInput } from './film';
 import { ToastService } from '../../core/toast/toast.service';
+import { forkJoin } from 'rxjs';
+import { Actor } from '../actors/actor';
+import { ActorService } from '../actors/actor.service';
 
 @Component({
     selector: 'app-films-page',
@@ -12,6 +15,7 @@ import { ToastService } from '../../core/toast/toast.service';
 export class FilmsPage implements OnInit {
     private readonly filmService = inject(FilmService);
     private readonly toast = inject(ToastService);
+    private readonly actorService = inject(ActorService);
 
     protected readonly films = signal<Film[]>([]);
     protected readonly total = signal(0);
@@ -41,6 +45,11 @@ export class FilmsPage implements OnInit {
     protected readonly detailLoading = signal(false);
     protected readonly detailError = signal<string | null>(null);
     protected readonly detail = signal<Film | null>(null);
+
+    protected readonly cast = signal<Actor[]>([]);
+    protected readonly castSaving = signal(false);
+    protected readonly castQuery = signal('');
+    protected readonly castSuggestions = signal<Actor[]>([]);
 
     protected readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
 
@@ -119,11 +128,16 @@ export class FilmsPage implements OnInit {
     openDetail(film: Film) {
         this.detail.set(null);
         this.detailError.set(null);
+        this.cast.set([]);
         this.detailOpen.set(true);
         this.detailLoading.set(true);
-        this.filmService.getFilm(film.film_id).subscribe({
-            next: f => {
+        forkJoin({
+            film: this.filmService.getFilm(film.film_id),
+            cast: this.filmService.getFilmActors(film.film_id)
+        }).subscribe({
+            next: ({ film: f, cast }) => {
                 this.detail.set(f);
+                this.cast.set(cast);
                 this.detailLoading.set(false);
             },
             error: err => {
@@ -197,5 +211,44 @@ export class FilmsPage implements OnInit {
 
     onYearInput(value: string) {
         this.formYear.set(value === '' ? null : Number(value));
+    }
+
+    private syncCast() {
+        const filmId = this.detail()?.film_id;
+        if (filmId === undefined) return;
+        this.castSaving.set(true);
+        this.filmService.setFilmActors(filmId, this.cast().map(a => a.actor_id)).subscribe({
+            next: () => this.castSaving.set(false),
+            error: err => {
+                this.castSaving.set(false);
+                this.toast.show(err.error?.error ?? err.message, 'error');
+            }
+        });
+    }
+
+    addCastActor(actor: Actor) {
+        if (this.cast().some(a => a.actor_id === actor.actor_id)) return;
+        this.cast.update(list => [...list, actor]);
+        this.castQuery.set('');
+        this.castSuggestions.set([]);
+        this.syncCast();
+    }
+
+    removeCastActor(actorId: number) {
+        this.cast.update(list => list.filter(a => a.actor_id !== actorId));
+        this.syncCast();
+    }
+
+    onCastQuery(value: string) {
+        this.castQuery.set(value);
+        const q = value.trim().toLowerCase();
+        if (q === '') {
+            this.castSuggestions.set([]);
+            return;
+        }
+        this.actorService.listActors({ page: 1, pageSize: 5, search: q }).subscribe({
+            next: page => this.castSuggestions.set(page.items.filter(m => !this.cast().some(a => a.actor_id === m.actor_id))),
+            error: () => this.castSuggestions.set([])
+        });
     }
 }

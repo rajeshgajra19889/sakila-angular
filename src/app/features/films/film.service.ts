@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Film, TopRentedFilm, Page, FilmInput } from './film';
+import { Actor } from '../actors/actor';
 
 
 export interface FilmQuery {
@@ -45,5 +46,13 @@ export class FilmService {
 
     deleteFilm(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/films/${id}`);
+    }
+
+    getFilmActors(id: number): Observable<Actor[]> {
+        return this.http.get<Actor[]>(`${this.baseUrl}/films/${id}/actors`);
+    }
+
+    setFilmActors(id: number, actorIds: number[]): Observable<Actor[]> {
+        return this.http.put<Actor[]>(`${this.baseUrl}/films/${id}/actors`, { actor_ids: actorIds });
     }
 }
