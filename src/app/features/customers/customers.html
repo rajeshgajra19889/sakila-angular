@@ -1,7 +1,8 @@
 <div class="customers-page">
     <h2>Customers</h2>
+
     <div class="toolbar">
-        <input type="search" placeholder="Search name…" [value]="search()"
+        <input type="search" placeholder="Search name or email…" [value]="search()"
             (input)="onSearch($any($event.target).value)" />
         <div class="spacer"></div>
         <select (change)="onPageSizeChange($any($event.target).value)">
@@ -19,23 +20,25 @@
                 <th (click)="onSort('first_name')">First {{ sortIndicator('first_name') }}</th>
                 <th (click)="onSort('last_name')">Last {{ sortIndicator('last_name') }}</th>
                 <th (click)="onSort('email')">Email {{ sortIndicator('email') }}</th>
+                <th>Active</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @for (a of customers(); track a.customer_id) {
+            @for (c of customers(); track c.customer_id) {
             <tr>
-                <td>{{ a.customer_id }}</td>
-                <td>{{ a.first_name }}</td>
-                <td>{{ a.last_name }}</td>
-                <td>{{ a.email }}</td>
+                <td>{{ c.customer_id }}</td>
+                <td>{{ c.first_name }}</td>
+                <td>{{ c.last_name }}</td>
+                <td>{{ c.email }}</td>
+                <td>{{ c.active ? 'Yes' : 'No' }}</td>
                 <td class="actions">
-                    <button (click)="openDetail(a)">Details</button>
+                    <button (click)="openDetail(c)">Details</button>
                 </td>
             </tr>
             } @empty {
             <tr>
-                <td colspan="5">No customers match.</td>
+                <td colspan="6">No customers match.</td>
             </tr>
             }
         </tbody>
@@ -54,7 +57,7 @@
 
     @if (detailOpen()) {
     <div class="modal-backdrop" (click)="closeDetail()">
-        <div class="modal modal-wide" (click)="stopClick($event)">
+        <div class="modal" (click)="stopClick($event)">
             <h3>Customer details</h3>
             @if (detailLoading()) {
             <div class="loading">Loading…</div>
@@ -64,14 +67,14 @@
             <dl class="detail-grid">
                 <dt>Name</dt><dd>{{ d.first_name }} {{ d.last_name }}</dd>
                 <dt>Email</dt><dd>{{ d.email }}</dd>
-                <dt>Store</dt><dd>{{ d.store_id }}</dd>
                 <dt>Active</dt><dd>{{ d.active ? 'Yes' : 'No' }}</dd>
-                <dt>Rentals</dt><dd>{{ d.rentalCount }}</dd>
+                <dt>Store</dt><dd>{{ d.store_id }}</dd>
+                <dt>Total rentals</dt><dd>{{ d.rentalCount }}</dd>
             </dl>
             <h4>Recent rentals</h4>
-            <ul class="rental-list">
+            <ul class="film-list">
                 @for (r of d.rentals; track r.rental_id) {
-                <li>{{ r.title }} · {{ r.rental_date | date: 'MMM d, y HH:mm' }}</li>
+                <li>{{ r.title }} <span class="muted">— {{ r.rental_date }}</span></li>
                 } @empty {
                 <li class="muted">No rentals yet.</li>
                 }
