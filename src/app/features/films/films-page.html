@@ -36,6 +36,7 @@
                 <td>{{ film.release_year }}</td>
                 <td>{{ film.rental_rate }}</td>
                 <td class="actions">
+                    <button (click)="openDetail(film)">Details</button>
                     <button (click)="editFilm(film)">Edit</button>
                     <button class="danger" (click)="deleteFilm(film)">Delete</button>
                 </td>
@@ -58,6 +59,32 @@
         <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
         <span class="info">{{ total() }} films · page {{ page() }} of {{ totalPages() }}</span>
     </div>
+    @if (detailOpen()) {
+    <div class="modal-backdrop" (click)="closeDetail()">
+        <div class="modal" (click)="stopClick($event)">
+            <h3>Film details</h3>
+            @if (detailLoading()) {
+            <div class="loading">Loading…</div>
+            } @else if (detailError(); as err) {
+            <div class="error">{{ err }}</div>
+            } @else if (detail(); as f) {
+            <dl class="detail-grid">
+                <dt>Title</dt>
+                <dd>{{ f.title }}</dd>
+                <dt>Year</dt>
+                <dd>{{ f.release_year }}</dd>
+                <dt>Rental rate</dt>
+                <dd>${{ f.rental_rate }}</dd>
+                <dt>Language</dt>
+                <dd>{{ f.language_name ?? '—' }}</dd>
+            </dl>
+            }
+            <div class="modal-actions">
+                <button class="primary" (click)="closeDetail()">Close</button>
+            </div>
+        </div>
+    </div>
+    }
 
     @if (showForm()) {
     <div class="modal-backdrop" (click)="resetForm()">

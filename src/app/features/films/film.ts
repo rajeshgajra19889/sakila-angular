@@ -3,6 +3,7 @@ export interface Film {
     title: string;
     release_year: number;
     rental_rate: string;
+     language_name?: string | null;
 }
 
 export interface TopRentedFilm {

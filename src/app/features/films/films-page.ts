@@ -35,6 +35,11 @@ export class FilmsPage implements OnInit {
     protected readonly formValid = computed(() => !this.titleError() && !this.yearError() && !this.rateError());
     protected readonly editing = signal<Film | null>(null);
 
+    protected readonly detailOpen = signal(false);
+    protected readonly detailLoading = signal(false);
+    protected readonly detailError = signal<string | null>(null);
+    protected readonly detail = signal<Film | null>(null);
+
     protected readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
 
     protected readonly pages = computed(() => {
@@ -108,6 +113,27 @@ export class FilmsPage implements OnInit {
         this.formYear.set(film.release_year);
         this.formRate.set(film.rental_rate);
         this.showForm.set(true);
+    }
+
+    openDetail(film: Film) {
+        this.detail.set(null);
+        this.detailError.set(null);
+        this.detailOpen.set(true);
+        this.detailLoading.set(true);
+        this.filmService.getFilm(film.film_id).subscribe({
+            next: f => {
+                this.detail.set(f);
+                this.detailLoading.set(false);
+            },
+            error: err => {
+                this.detailError.set(err.message);
+                this.detailLoading.set(false);
+            }
+        });
+    }
+    closeDetail() {
+        this.detailOpen.set(false);
+        this.detail.set(null);
     }
 
     resetForm() {
