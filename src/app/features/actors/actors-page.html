@@ -1,0 +1,101 @@
+<div class="actors-page">
+    <h2>Actors</h2>
+    <div class="toolbar">
+        <button class="primary" (click)="openCreate()">+ Add actor</button>
+        <input type="search" placeholder="Search name…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onPageSizeChange($any($event.target).value)">
+            <option [selected]="pageSize() === 10">10</option>
+            <option [selected]="pageSize() === 20">20</option>
+            <option [selected]="pageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th (click)="onSort('actor_id')">ID {{ sortIndicator('actor_id') }}</th>
+                <th (click)="onSort('first_name')">First {{ sortIndicator('first_name') }}</th>
+                <th (click)="onSort('last_name')">Last {{ sortIndicator('last_name') }}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (a of actors(); track a.actor_id) {
+            <tr>
+                <td>{{ a.actor_id }}</td>
+                <td>{{ a.first_name }}</td>
+                <td>{{ a.last_name }}</td>
+                <td class="actions">
+                    <button (click)="openDetail(a)">Details</button>
+                    <button (click)="editActor(a)">Edit</button>
+                    <button class="danger" (click)="deleteActor(a)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="4">No actors match.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="page() <= 1" (click)="goToPage(page() - 1)">‹ Prev</button>
+        @for (p of pages(); track p) {
+        <button [class.active]="p === page()" (click)="goToPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
+        <span class="info">{{ total() }} actors · page {{ page() }} of {{ totalPages() }}</span>
+    </div>
+
+        @if (showForm()) {
+    <div class="modal-backdrop" (click)="resetForm()">
+        <div class="modal" (click)="stopClick($event)">
+            <h3>{{ editing() ? 'Edit actor' : 'New actor' }}</h3>
+            <label>First name *</label>
+            <input placeholder="e.g. PENELOPE" [value]="formFirst()" (input)="formFirst.set($any($event.target).value)" />
+            @if (firstError()) { <span class="field-error">First name is required.</span> }
+            <label>Last name *</label>
+            <input placeholder="e.g. GUINESS" [value]="formLast()" (input)="formLast.set($any($event.target).value)" />
+            @if (lastError()) { <span class="field-error">Last name is required.</span> }
+            <div class="modal-actions">
+                <button (click)="resetForm()">Cancel</button>
+                <button class="primary" [disabled]="!formValid()" (click)="saveActor()">
+                    {{ editing() ? 'Save changes' : 'Create actor' }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (detailOpen()) {
+    <div class="modal-backdrop" (click)="closeDetail()">
+        <div class="modal modal-wide" (click)="stopClick($event)">
+            <h3>Actor details</h3>
+            @if (detailLoading()) {
+            <div class="loading">Loading…</div>
+            } @else if (detailError(); as err) {
+            <div class="error">{{ err }}</div>
+            } @else if (detail(); as d) {
+            <dl class="detail-grid">
+                <dt>Name</dt><dd>{{ d.first_name }} {{ d.last_name }}</dd>
+                <dt>Film count</dt><dd>{{ d.films.length }}</dd>
+            </dl>
+            <h4>{{ d.first_name }}'s films</h4>
+            <ul class="film-list">
+                @for (f of d.films; track f.film_id) { <li>{{ f.title }}</li> }
+                @empty { <li class="muted">No films yet.</li> }
+            </ul>
+            }
+            <div class="modal-actions">
+                <button class="primary" (click)="closeDetail()">Close</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

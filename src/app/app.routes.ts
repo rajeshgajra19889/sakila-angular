@@ -10,7 +10,8 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             { path: '', pathMatch: 'full', loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
-            { path: 'films', loadComponent: () => import('./features/films/films-page').then(m => m.FilmsPage) }
+            { path: 'films', loadComponent: () => import('./features/films/films-page').then(m => m.FilmsPage) },
+            { path: 'actors', loadComponent: () => import('./features/actors/actors-page').then(m => m.ActorsPage) }
         ]
     },
     { path: '**', redirectTo: '' }
