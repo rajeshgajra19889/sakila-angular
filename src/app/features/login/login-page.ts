@@ -2,11 +2,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-login-page',
     styleUrl: './login-page.css',
     templateUrl: './login-page.html',
+    imports: [FormsModule],
 })
 export class LoginPage {
     private readonly auth = inject(AuthService);

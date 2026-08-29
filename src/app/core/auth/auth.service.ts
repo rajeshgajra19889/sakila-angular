@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
 export interface StaffProfile {
@@ -15,6 +16,7 @@ const TOKEN_KEY = 'sakila_token';
 @Service()
 export class AuthService {
     private readonly http = inject(HttpClient);
+    private readonly router = inject(Router);
     private readonly baseUrl = 'http://localhost:3000';
 
     private readonly _token = signal<string | null>(localStorage.getItem(TOKEN_KEY));
@@ -51,5 +53,6 @@ export class AuthService {
         this._token.set(null);
         localStorage.removeItem(TOKEN_KEY);
         this.staff.set(null);
+        this.router.navigateByUrl('/login');
     }
 }
