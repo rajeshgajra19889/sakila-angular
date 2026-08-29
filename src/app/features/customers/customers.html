@@ -1,0 +1,86 @@
+<div class="customers-page">
+    <h2>Customers</h2>
+    <div class="toolbar">
+        <input type="search" placeholder="Search name…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onPageSizeChange($any($event.target).value)">
+            <option [selected]="pageSize() === 10">10</option>
+            <option [selected]="pageSize() === 20">20</option>
+            <option [selected]="pageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th (click)="onSort('customer_id')">ID {{ sortIndicator('customer_id') }}</th>
+                <th (click)="onSort('first_name')">First {{ sortIndicator('first_name') }}</th>
+                <th (click)="onSort('last_name')">Last {{ sortIndicator('last_name') }}</th>
+                <th (click)="onSort('email')">Email {{ sortIndicator('email') }}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (a of customers(); track a.customer_id) {
+            <tr>
+                <td>{{ a.customer_id }}</td>
+                <td>{{ a.first_name }}</td>
+                <td>{{ a.last_name }}</td>
+                <td>{{ a.email }}</td>
+                <td class="actions">
+                    <button (click)="openDetail(a)">Details</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="5">No customers match.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="page() <= 1" (click)="goToPage(page() - 1)">‹ Prev</button>
+        @for (p of pages(); track p) {
+        <button [class.active]="p === page()" (click)="goToPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
+        <span class="info">{{ total() }} customers · page {{ page() }} of {{ totalPages() }}</span>
+    </div>
+
+    @if (detailOpen()) {
+    <div class="modal-backdrop" (click)="closeDetail()">
+        <div class="modal modal-wide" (click)="stopClick($event)">
+            <h3>Customer details</h3>
+            @if (detailLoading()) {
+            <div class="loading">Loading…</div>
+            } @else if (detailError(); as err) {
+            <div class="error">{{ err }}</div>
+            } @else if (detail(); as d) {
+            <dl class="detail-grid">
+                <dt>Name</dt><dd>{{ d.first_name }} {{ d.last_name }}</dd>
+                <dt>Email</dt><dd>{{ d.email }}</dd>
+                <dt>Store</dt><dd>{{ d.store_id }}</dd>
+                <dt>Active</dt><dd>{{ d.active ? 'Yes' : 'No' }}</dd>
+                <dt>Rentals</dt><dd>{{ d.rentalCount }}</dd>
+            </dl>
+            <h4>Recent rentals</h4>
+            <ul class="rental-list">
+                @for (r of d.rentals; track r.rental_id) {
+                <li>{{ r.title }} · {{ r.rental_date | date: 'MMM d, y HH:mm' }}</li>
+                } @empty {
+                <li class="muted">No rentals yet.</li>
+                }
+            </ul>
+            }
+            <div class="modal-actions">
+                <button class="primary" (click)="closeDetail()">Close</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

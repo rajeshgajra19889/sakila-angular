@@ -11,7 +11,8 @@ export const routes: Routes = [
         children: [
             { path: '', pathMatch: 'full', loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
             { path: 'films', loadComponent: () => import('./features/films/films-page').then(m => m.FilmsPage) },
-            { path: 'actors', loadComponent: () => import('./features/actors/actors-page').then(m => m.ActorsPage) }
+            { path: 'actors', loadComponent: () => import('./features/actors/actors-page').then(m => m.ActorsPage) },
+            { path: 'customers', loadComponent: () => import('./features/customers/customers').then(m => m.Customers) }
         ]
     },
     { path: '**', redirectTo: '' }
