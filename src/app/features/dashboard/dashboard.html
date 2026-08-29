@@ -1,2 +1,54 @@
 <h1>Dashboard</h1>
-<p>Welcome to the Sakila admin.</p>
+
+@if (loading()) {
+<p class="muted">Loading…</p>
+} @else {
+
+@if (stats(); as s) {
+<div class="cards">
+    <div class="card"><span class="card-label">Films</span><span class="card-value">{{ s.films }}</span></div>
+    <div class="card"><span class="card-label">Customers</span><span class="card-value">{{ s.customers }}</span></div>
+    <div class="card"><span class="card-label">Rentals</span><span class="card-value">{{ s.rentals }}</span></div>
+    <div class="card"><span class="card-label">Inventory</span><span class="card-value">{{ s.inventory }}</span></div>
+</div>
+}
+
+<div class="panels">
+    <section class="panel">
+        <h2>Rental activity by month</h2>
+        <div class="bars">
+            @for (m of months(); track m.month) {
+            <div class="bar-wrap" [title]="m.month + ': ' + m.count">
+                <div class="bar" [style.height.%]="barPercent(m.count)"></div>
+                <span class="bar-label">{{ m.month }}</span>
+            </div>
+            }
+        </div>
+    </section>
+    <section class="panel">
+        <h2>Top categories</h2>
+        <div class="cats">
+            @for (c of categories(); track c.name) {
+            <div class="cat">
+                <span class="cat-name">{{ c.name }}</span>
+                <div class="cat-track"><div class="cat-fill" [style.width.%]="barPercent(c.count)"></div></div>
+                <span class="cat-count">{{ c.count }}</span>
+            </div>
+            }
+        </div>
+    </section>
+</div>
+
+<section class="panel">
+    <h2>Recent rentals</h2>
+    <table>
+        <thead><tr><th>Customer</th><th>Film</th><th>Date</th></tr></thead>
+        <tbody>
+            @for (r of recent(); track r.rental_id) {
+            <tr><td>{{ r.customer }}</td><td>{{ r.film }}</td><td>{{ r.rental_date.slice(0, 10) }}</td></tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+}
