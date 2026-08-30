@@ -1,0 +1,84 @@
+<div class="rentals-page">
+    <h2>Rentals</h2>
+
+    <div class="toolbar">
+        <input type="search" placeholder="Search film or customer…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onPageSizeChange($any($event.target).value)">
+            <option [selected]="pageSize() === 10">10</option>
+            <option [selected]="pageSize() === 20">20</option>
+            <option [selected]="pageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th (click)="onSort('rental_id')">ID {{ sortIndicator('rental_id') }}</th>
+                <th (click)="onSort('rental_date')">Rented {{ sortIndicator('rental_date') }}</th>
+                <th (click)="onSort('returned')">Returned {{ sortIndicator('returned') }}</th>
+                <th (click)="onSort('film')">Film {{ sortIndicator('film') }}</th>
+                <th (click)="onSort('customer')">Customer {{ sortIndicator('customer') }}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (r of rentals(); track r.rental_id) {
+            <tr>
+                <td>{{ r.rental_id }}</td>
+                <td>{{ r.rental_date }}</td>
+                <td>{{ r.return_date ? 'Yes' : 'No' }}</td>
+                <td>{{ r.title }}</td>
+                <td>{{ r.customer_name }}</td>
+                <td class="actions">
+                    <button (click)="openDetail(r)">Details</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="6">No rentals match.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="page() <= 1" (click)="goToPage(page() - 1)">‹ Prev</button>
+        @for (p of pages(); track p) {
+        <button [class.active]="p === page()" (click)="goToPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
+        <span class="info">{{ total() }} rentals · page {{ page() }} of {{ totalPages() }}</span>
+    </div>
+
+    @if (detailOpen()) {
+    <div class="modal-backdrop" (click)="closeDetail()">
+        <div class="modal" (click)="stopClick($event)">
+            <h3>Rental details</h3>
+            @if (detailLoading()) {
+            <div class="loading">Loading…</div>
+            } @else if (detailError(); as err) {
+            <div class="error">{{ err }}</div>
+            } @else if (detail(); as d) {
+            <dl class="detail-grid">
+                <dt>Film</dt><dd>{{ d.film.title }}</dd>
+                <dt>Year</dt><dd>{{ d.film.release_year }}</dd>
+                <dt>Rate</dt><dd>${{ d.film.rental_rate }}</dd>
+                <dt>Customer</dt><dd>{{ d.customer.first_name }} {{ d.customer.last_name }}</dd>
+                <dt>Email</dt><dd>{{ d.customer.email }}</dd>
+                <dt>Rented</dt><dd>{{ d.rental_date }}</dd>
+                <dt>Returned</dt><dd>{{ d.return_date ?? '—' }}</dd>
+                <dt>Inventory</dt><dd>{{ d.inventory_id }}</dd>
+            </dl>
+            }
+            <div class="modal-actions">
+                <button class="primary" (click)="closeDetail()">Close</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>
