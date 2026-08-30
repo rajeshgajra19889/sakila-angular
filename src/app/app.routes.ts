@@ -13,7 +13,8 @@ export const routes: Routes = [
             { path: 'films', loadComponent: () => import('./features/films/films-page').then(m => m.FilmsPage) },
             { path: 'actors', loadComponent: () => import('./features/actors/actors-page').then(m => m.ActorsPage) },
             { path: 'customers', loadComponent: () => import('./features/customers/customers').then(m => m.Customers) },
-            { path: 'rentals', loadComponent: () => import('./features/rentals/rentals-page').then(m => m.RentalsPage) }
+            { path: 'rentals', loadComponent: () => import('./features/rentals/rentals-page').then(m => m.RentalsPage) },
+            { path: 'inventory', loadComponent: () => import('./features/inventory/inventory-page').then(m => m.InventoryPage) }
         ]
     },
     { path: '**', redirectTo: '' }

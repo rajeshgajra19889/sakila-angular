@@ -1,0 +1,77 @@
+<div class="inventory-page">
+    <h2>Inventory</h2>
+
+    <div class="toolbar">
+        <input type="search" placeholder="Search film…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onPageSizeChange($any($event.target).value)">
+            <option [selected]="pageSize() === 10">10</option>
+            <option [selected]="pageSize() === 20">20</option>
+            <option [selected]="pageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th (click)="onSort('inventory_id')">ID {{ sortIndicator('inventory_id') }}</th>
+                <th (click)="onSort('title')">Film {{ sortIndicator('title') }}</th>
+                <th (click)="onSort('store_id')">Store {{ sortIndicator('store_id') }}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (i of items(); track i.inventory_id) {
+            <tr>
+                <td>{{ i.inventory_id }}</td>
+                <td>{{ i.title }}</td>
+                <td>{{ i.store_id }}</td>
+                <td class="actions">
+                    <button (click)="openDetail(i)">Details</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="4">No inventory matches.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="page() <= 1" (click)="goToPage(page() - 1)">‹ Prev</button>
+        @for (p of pages(); track p) {
+        <button [class.active]="p === page()" (click)="goToPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
+        <span class="info">{{ total() }} items · page {{ page() }} of {{ totalPages() }}</span>
+    </div>
+
+    @if (detailOpen()) {
+    <div class="modal-backdrop" (click)="closeDetail()">
+        <div class="modal" (click)="stopClick($event)">
+            <h3>Inventory details</h3>
+            @if (detailLoading()) {
+            <div class="loading">Loading…</div>
+            } @else if (detailError(); as err) {
+            <div class="error">{{ err }}</div>
+            } @else if (detail(); as d) {
+            <dl class="detail-grid">
+                <dt>Film</dt><dd>{{ d.film.title }}</dd>
+                <dt>Year</dt><dd>{{ d.film.release_year }}</dd>
+                <dt>Rate</dt><dd>${{ d.film.rental_rate }}</dd>
+                <dt>Inventory id</dt><dd>{{ d.inventory_id }}</dd>
+                <dt>Rented</dt><dd>{{ d.rentalCount }} times</dd>
+            </dl>
+            }
+            <div class="modal-actions">
+                <button class="primary" (click)="closeDetail()">Close</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>
