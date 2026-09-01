@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Film, TopRentedFilm, Page, FilmInput } from './film';
+import { Film, TopRentedFilm, Page, FilmInput, Language } from './film';
 import { Actor } from '../actors/actor';
 
 
@@ -34,6 +34,10 @@ export class FilmService {
 
     getFilm(id: number): Observable<Film> {
         return this.http.get<Film>(`${this.baseUrl}/films/${id}`);
+    }
+
+    getLanguages(): Observable<Language[]> {
+        return this.http.get<Language[]>(`${this.baseUrl}/languages`);
     }
 
     createFilm(input: FilmInput): Observable<Film> {

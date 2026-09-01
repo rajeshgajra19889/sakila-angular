@@ -1,0 +1,49 @@
+<div class="stores-page">
+    <h2>Stores</h2>
+
+    <div class="toolbar">
+        <input type="search" placeholder="Filter stores…" (input)="filter.set($any($event.target).value)" />
+        <select (change)="status.set($any($event.target).value)">
+            <option value="all">All</option>
+            <option value="active">Active only</option>
+            <option value="inactive">Inactive only</option>
+        </select>
+        <div class="spacer"></div>
+        <button class="primary" (click)="addStore()">+ New store</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Store</th>
+                <th>Status</th>
+                <th>Manager</th>
+                <th>Staff</th>
+                <th>Inventory</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (s of filtered(); track s.store_id) {
+            <tr>
+                <td>Store {{ s.store_id }}</td>
+                <td><span class="badge" [class.badge-inactive]="!s.active">{{ s.active ? 'Active' : 'Inactive' }}</span></td>
+                <td>{{ s.manager.first_name }} {{ s.manager.last_name }}</td>
+                <td>{{ s.staffCount }}</td>
+                <td>{{ s.inventoryCount }}</td>
+                <td>{{ s.address.address }}, {{ s.address.city_name }}</td>
+                <td class="actions">
+                    <button (click)="details(s)">Details</button>
+                    <button (click)="edit(s)">Edit</button>
+                    <button [class.warn]="s.active" (click)="toggleActive(s)">{{ s.active ? 'Deactivate' : 'Activate' }}</button>
+                    <button class="danger" (click)="remove(s)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr><td colspan="7">No stores found.</td></tr>
+            }
+        </tbody>
+    </table>
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+</div>

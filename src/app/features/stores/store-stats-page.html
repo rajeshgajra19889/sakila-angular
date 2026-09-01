@@ -1,0 +1,62 @@
+<div class="stats-page">
+    <div class="toolbar">
+        <button (click)="back()">← Stores</button>
+        <div class="spacer"></div>
+    </div>
+
+    @if (error(); as err) {
+    <div class="error">{{ err }}</div>
+    }
+
+    @if (store(); as s) {
+    <h2>Store {{ s.store_id }} — {{ s.manager.first_name }} {{ s.manager.last_name }}</h2>
+    <p class="muted">{{ s.address.address }}, {{ s.address.district }} · {{ s.address.city_name }}, {{ s.address.country_name }} · {{ s.address.phone }}</p>
+    } @else {
+    <h2>Store statistics</h2>
+    }
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    @if (stats(); as st) {
+    <div class="cards">
+        <div class="card">
+            <div class="num">{{ st.staffCount }}</div>
+            <div class="label">Staff</div>
+        </div>
+        <div class="card">
+            <div class="num">{{ st.inventoryCount }}</div>
+            <div class="label">Inventory copies</div>
+        </div>
+        <div class="card">
+            <div class="num">{{ st.totalRentals }}</div>
+            <div class="label">Total rentals</div>
+        </div>
+        <div class="card">
+            <div class="num">{{ st.activeRentals }}</div>
+            <div class="label">Active rentals</div>
+        </div>
+        <div class="card">
+            <div class="num">${{ st.revenue.toLocaleString(undefined, { maximumFractionDigits: 2 }) }}</div>
+            <div class="label">Revenue</div>
+        </div>
+        <div class="card">
+            <div class="num">{{ st.distinctFilms }}</div>
+            <div class="label">Films in stock</div>
+        </div>
+    </div>
+
+    <h3>Top films by rentals</h3>
+    <table>
+        <thead>
+            <tr><th>Film</th><th>Rentals</th></tr>
+        </thead>
+        <tbody>
+            @for (f of st.topFilms; track f.title) {
+            <tr><td>{{ f.title }}</td><td>{{ f.rentals }}</td></tr>
+            } @empty {
+            <tr><td colspan="2">No rentals yet.</td></tr>
+            }
+        </tbody>
+    </table>
+    }
+</div>

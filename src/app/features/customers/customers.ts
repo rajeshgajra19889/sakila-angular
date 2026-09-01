@@ -1,11 +1,11 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { CustomerService } from './customer.service';
-import { Customer, CustomerDetail, CustomerQuery } from './customers.interface';
+import { Customer, CustomerDetail, CustomerQuery,CustomerPayment } from './customers.interface';
 import { ToastService } from '../../core/toast/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [DatePipe],
+  imports: [],
   selector: 'app-customers',
   styleUrl: './customers.css',
   templateUrl: './customers.html',
@@ -13,6 +13,7 @@ import { ToastService } from '../../core/toast/toast.service';
 export class Customers implements OnInit {
   private readonly customerService = inject(CustomerService);
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
   protected readonly loading = signal(true);
 
@@ -40,6 +41,16 @@ export class Customers implements OnInit {
   protected readonly detailError = signal<string | null>(null);
   protected readonly detailOpen = signal(false);
   protected readonly detailLoading = signal(false);
+  
+  
+
+  //payments start
+  protected readonly payments = signal<CustomerPayment[]>([]);
+  protected readonly paymentError = signal<string | null>(null);
+  protected readonly paymentOpen = signal(false);
+  protected readonly paymentLoading = signal(false);
+  protected readonly paymentCount = signal<number | null>(null);
+
 
 
   ngOnInit() {
@@ -90,10 +101,6 @@ export class Customers implements OnInit {
     this.loadCustomers();
   }
 
-  stopClick(event: Event) {
-    event.stopPropagation();
-  }
-
   sortIndicator(column: string): string {
     if (this.sortBy() !== column) return '';
     return this.sortOrder() === 'asc' ? '▲' : '▼';
@@ -140,5 +147,38 @@ export class Customers implements OnInit {
   closeDetail() {
     this.detailOpen.set(false);
     this.detail.set(null);
+  }
+  stopClick(event: Event) {
+    event.stopPropagation();
+  }
+  addCustomer() {
+    this.router.navigateByUrl('/customers/new');
+  }
+
+  editCustomer(customer: Customer) {
+    this.router.navigateByUrl(`/customers/${customer.customer_id}/edit`);
+  }
+
+   openPayment(customer: Customer) {
+    this.payments.set([]);
+    this.paymentError.set(null);
+    this.paymentOpen.set(true);
+    this.paymentLoading.set(true);
+    this.customerService.getPaymentHistory(customer.customer_id).subscribe({
+      next: d => {
+        this.payments.set(d);
+        this.paymentCount.set(d.length)
+        this.paymentLoading.set(false);
+      },
+      error: err => {
+        this.paymentError.set(err.error?.error ?? err.message);
+        this.paymentLoading.set(false);
+      }
+    });
+  }
+
+   closePayment() {
+    this.paymentOpen.set(false);
+    this.payments.set([]);
   }
 }

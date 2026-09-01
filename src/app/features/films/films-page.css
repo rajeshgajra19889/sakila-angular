@@ -108,6 +108,19 @@ th:hover {
     padding: 7px 14px;
     border-radius: 4px;
     cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.actions a,
+.actions button {
+    margin-right: 4px;
+    padding: 3px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
 }
 
 .form {

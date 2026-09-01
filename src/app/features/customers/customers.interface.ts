@@ -3,7 +3,7 @@ export interface Customer {
     first_name: string;
     last_name: string;
     email: string;
-    active: boolean;
+    activebool: boolean;
     store_id: number;
 }
 
@@ -14,6 +14,7 @@ export interface CustomerRental {
 }
 
 export interface CustomerDetail extends Customer {
+    address_id: number;
     rentals: CustomerRental[];
     rentalCount: number;
 }
@@ -31,4 +32,21 @@ export interface CustomerQuery {
     search?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
+}
+
+export interface CustomerInput {
+    first_name: string;
+    last_name: string;
+    email: string;
+    store_id: number;
+    address_id: number;
+    activebool: boolean;
+}
+export interface CustomerPayment{
+    payment_id:number;
+    first_name:string;
+    last_name:string
+    title:string;
+    amount:string | number | null;
+    payment_date:string;
 }

@@ -1,0 +1,52 @@
+<div class="form-page">
+    <h2>{{ mode() === 'edit' ? 'Edit copy' : 'Add stock' }}</h2>
+
+    @if (mode() === 'edit' && loadError(); as err) {
+    <div class="error">{{ err }}</div>
+    }
+
+    @if (mode() === 'new') {
+    <div class="field">
+        <label>Film *</label>
+        <input placeholder="Search film…" [value]="stockQuery()" (input)="onStockQuery($any($event.target).value)" />
+        @if (stockQuery() !== '' && stockSuggestions().length) {
+        <ul class="suggestions">
+            @for (m of stockSuggestions(); track m.film_id) {
+            <li><button (click)="pickStockFilm(m)">{{ m.title }}</button></li>
+            }
+        </ul>
+        }
+        @if (stockFilmId() === null && stockQuery() !== '') {
+        <span class="field-error">Pick a film from the list.</span>
+        }
+    </div>
+    <div class="field">
+        <label>Quantity *</label>
+        <input type="number" min="1" max="100" [value]="stockQty()" (input)="stockQty.set($any($event.target).value)" />
+    </div>
+    } @else {
+    <dl class="detail-grid">
+        <dt>Film</dt><dd>{{ copy()?.film?.title }}</dd>
+        <dt>Copy id</dt><dd>{{ copy()?.inventory_id }}</dd>
+    </dl>
+    }
+
+    <div class="field">
+        <label>Store *</label>
+        <select [value]="stockStore() ?? ''" (change)="onStoreChange($any($event.target).value)">
+            @for (s of selectableStores(); track s.store_id) {
+            <option [value]="s.store_id">Store {{ s.store_id }} — {{ s.manager.first_name }} {{ s.manager.last_name }}</option>
+            }
+            @empty {
+            <option value="">No active stores</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-actions">
+        <button (click)="cancel()">Cancel</button>
+        <button class="primary" [disabled]="!stockValid() || saving()" (click)="submit()">
+            {{ mode() === 'edit' ? 'Move copy' : 'Add copies' }}
+        </button>
+    </div>
+</div>

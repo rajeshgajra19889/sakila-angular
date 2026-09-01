@@ -1,9 +1,35 @@
 export interface Film {
     film_id: number;
     title: string;
-    release_year: number;
+    description: string | null;
+    release_year: number | null;
+    language_id: number;
+    original_language_id?: number | null;
+    rental_duration: number;
     rental_rate: string;
-     language_name?: string | null;
+    length: number | null;
+    replacement_cost: string;
+    rating: string;
+    special_features: string[] | null;
+    language_name?: string | null;
+}
+
+export interface Language {
+    language_id: number;
+    name: string;
+}
+
+export interface FilmInput {
+    title: string;
+    description?: string | null;
+    release_year?: number | null;
+    language_id?: number | null;
+    rental_duration?: number | null;
+    rental_rate?: string | number | null;
+    length?: number | null;
+    replacement_cost?: string | number | null;
+    rating?: string | null;
+    special_features?: string[] | null;
 }
 
 export interface TopRentedFilm {
@@ -16,10 +42,4 @@ export interface Page<T> {
     total: number;
     page: number;
     pageSize: number;
-}
-
-export interface FilmInput {
-    title: string;
-    release_year?: number | null;
-    rental_rate?: number | string | null;
 }

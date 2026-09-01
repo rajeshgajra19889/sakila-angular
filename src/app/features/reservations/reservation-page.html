@@ -1,0 +1,210 @@
+<div class="reservations-page">
+    <h2>Reservations</h2>
+
+    <div class="toolbar">
+        <div class="tabs">
+            <button [class.active]="view() === 'holds'" (click)="setView('holds')">Holds</button>
+            <button [class.active]="view() === 'waitlist'" (click)="setView('waitlist')">Waitlist</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="primary" (click)="goInventory()">+ Hold a copy</button>
+    </div>
+
+    @if (view() === 'holds') {
+    <div class="toolbar">
+        <input type="search" placeholder="Search film or customer…" [value]="holdsSearch()"
+            (input)="onHoldsSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onHoldsPageSizeChange($any($event.target).value)">
+            <option [selected]="holdsPageSize() === 10">10</option>
+            <option [selected]="holdsPageSize() === 20">20</option>
+            <option [selected]="holdsPageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th>Film</th>
+                <th>Copy</th>
+                <th>Store</th>
+                <th>Expires</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (h of holds(); track h.hold_id) {
+            <tr>
+                <td>{{ h.customer_name }}</td>
+                <td>{{ h.title }}</td>
+                <td>#{{ h.inventory_id }}</td>
+                <td>{{ h.store_id }}</td>
+                <td>{{ h.expires_at.slice(0, 16).replace('T', ' ') }}</td>
+                <td class="actions">
+                    <button (click)="release(h)">Release</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr><td colspan="6">No active holds.</td></tr>
+            }
+        </tbody>
+    </table>
+    <div class="loading" [class.hidden]="!holdsLoading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="holdsPage() <= 1" (click)="goHoldsPage(holdsPage() - 1)">‹ Prev</button>
+        @for (p of holdsPages(); track p) {
+        <button [class.active]="p === holdsPage()" (click)="goHoldsPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="holdsPage() >= holdsTotalPages()" (click)="goHoldsPage(holdsPage() + 1)">Next ›</button>
+        <span class="info">{{ holdsTotal() }} holds · page {{ holdsPage() }} of {{ holdsTotalPages() }}</span>
+    </div>
+    } @else {
+    <div class="waitlist-form">
+        <label>Customer *</label>
+        <input placeholder="Search customer…" [value]="wlCustomerQuery()"
+            (input)="onWlCustomerQuery($any($event.target).value)" />
+        @if (wlCustomerQuery() !== '' && wlCustomerSuggestions().length) {
+        <ul class="suggestions">
+            @for (s of wlCustomerSuggestions(); track s.id) {
+            <li><button (click)="pickWlCustomer(s)">{{ s.label }}</button></li>
+            }
+        </ul>
+        }
+        @if (wlCustomerId() === null && wlCustomerQuery() !== '') {
+        <span class="field-error">Pick a customer from the list.</span>
+        }
+
+        <label>Film *</label>
+        <input placeholder="Search film…" [value]="wlFilmQuery()"
+            (input)="onWlFilmQuery($any($event.target).value)" />
+        @if (wlFilmQuery() !== '' && wlFilmSuggestions().length) {
+        <ul class="suggestions">
+            @for (m of wlFilmSuggestions(); track m.film_id) {
+            <li><button (click)="pickWlFilm(m)">{{ m.title }}</button></li>
+            }
+        </ul>
+        }
+        @if (wlFilmId() === null && wlFilmQuery() !== '') {
+        <span class="field-error">Pick a film from the list.</span>
+        }
+
+        <label>Store</label>
+        @if (activeStores().length) {
+        <select [value]="wlStore() ?? ''" (change)="onWlStoreChange($any($event.target).value)">
+            <option value="">Any store</option>
+            @for (s of activeStores(); track s.store_id) {
+            <option [value]="s.store_id">Store {{ s.store_id }} — {{ s.manager.first_name }} {{ s.manager.last_name }}</option>
+            }
+        </select>
+        }
+
+        <div class="form-actions">
+            <button class="primary" [disabled]="!wlValid() || wlSaving()" (click)="addWaitlist()">
+                {{ wlSaving() ? 'Adding…' : 'Add to waitlist' }}
+            </button>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <input type="search" placeholder="Search film or customer…" [value]="wlSearch()"
+            (input)="onWaitlistSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onWaitlistPageSizeChange($any($event.target).value)">
+            <option [selected]="wlPageSize() === 10">10</option>
+            <option [selected]="wlPageSize() === 20">20</option>
+            <option [selected]="wlPageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th>Film</th>
+                <th>Store</th>
+                <th>Since</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (e of waitlist(); track e.waitlist_id) {
+            <tr>
+                <td>{{ e.customer_name }}</td>
+                <td>{{ e.title }}</td>
+                <td>{{ e.store_id ? 'Store ' + e.store_id : 'Any store' }}</td>
+                <td>{{ e.created_at.slice(0, 16).replace('T', ' ') }}</td>
+                <td class="actions">
+                    @if (e.store_id) {
+                    <button class="primary" (click)="openPromote(e)">Promote</button>
+                    }
+                    <button (click)="removeWaitlist(e)">Remove</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr><td colspan="5">Nothing on the waitlist.</td></tr>
+            }
+        </tbody>
+    </table>
+    <div class="loading" [class.hidden]="!wlLoading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="wlPage() <= 1" (click)="goWaitlistPage(wlPage() - 1)">‹ Prev</button>
+        @for (p of wlPages(); track p) {
+        <button [class.active]="p === wlPage()" (click)="goWaitlistPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="wlPage() >= wlTotalPages()" (click)="goWaitlistPage(wlPage() + 1)">Next ›</button>
+        <span class="info">{{ wlTotal() }} waiting · page {{ wlPage() }} of {{ wlTotalPages() }}</span>
+    </div>
+    }
+
+    @if (promoteOpen()) {
+    <div class="modal-backdrop" (click)="closePromote()">
+        <div class="modal wide" (click)="stopClick($event)">
+            <h3>Promote — {{ promoteEntry()?.customer_name }}</h3>
+            <p class="muted">{{ promoteEntry()?.title }}{{ promoteEntry()?.store_id ? ' · store ' + promoteEntry()?.store_id : '' }}</p>
+
+            @if (promoteError(); as err) {
+            <div class="error">{{ err }}</div>
+            }
+
+            @if (promoteLoading()) {
+            <div class="loading">Finding free copies…</div>
+            } @else if (promoteCopies().length === 0) {
+            <p class="muted">No free copies right now — renters or holds occupy them all.</p>
+            } @else {
+            <div class="hold-for">
+                <label>Hold for</label>
+                <select [value]="promoteDays()" (change)="onPromoteDaysChange($any($event.target).value)">
+                    <option value="1">1 day</option>
+                    <option value="3">3 days</option>
+                    <option value="7">7 days</option>
+                    <option value="14">14 days</option>
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Copy</th><th>Store</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @for (c of promoteCopies(); track c.inventory_id) {
+                    <tr>
+                        <td>#{{ c.inventory_id }}</td>
+                        <td>{{ c.store_id }}</td>
+                        <td><button class="primary" (click)="promote(c)">Hold for {{ promoteEntry()?.customer_name }}</button></td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            }
+
+            <div class="modal-actions">
+                <button [disabled]="promoteSaving()" (click)="closePromote()">Close</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

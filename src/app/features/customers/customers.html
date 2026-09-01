@@ -2,6 +2,7 @@
     <h2>Customers</h2>
 
     <div class="toolbar">
+        <button class="primary" (click)="addCustomer()">+ Add Customer</button>
         <input type="search" placeholder="Search name or email…" [value]="search()"
             (input)="onSearch($any($event.target).value)" />
         <div class="spacer"></div>
@@ -31,9 +32,11 @@
                 <td>{{ c.first_name }}</td>
                 <td>{{ c.last_name }}</td>
                 <td>{{ c.email }}</td>
-                <td>{{ c.active ? 'Yes' : 'No' }}</td>
+                <td>{{ c.activebool ? 'Yes' : 'No' }}</td>
                 <td class="actions">
+                    <button (click)="openPayment(c)">Payment</button>
                     <button (click)="openDetail(c)">Details</button>
+                    <button (click)="editCustomer(c)">Edit</button>
                 </td>
             </tr>
             } @empty {
@@ -65,11 +68,16 @@
             <div class="error">{{ err }}</div>
             } @else if (detail(); as d) {
             <dl class="detail-grid">
-                <dt>Name</dt><dd>{{ d.first_name }} {{ d.last_name }}</dd>
-                <dt>Email</dt><dd>{{ d.email }}</dd>
-                <dt>Active</dt><dd>{{ d.active ? 'Yes' : 'No' }}</dd>
-                <dt>Store</dt><dd>{{ d.store_id }}</dd>
-                <dt>Total rentals</dt><dd>{{ d.rentalCount }}</dd>
+                <dt>Name</dt>
+                <dd>{{ d.first_name }} {{ d.last_name }}</dd>
+                <dt>Email</dt>
+                <dd>{{ d.email }}</dd>
+                <dt>Active</dt>
+                <dd>{{ d.activebool ? 'Yes' : 'No' }}</dd>
+                <dt>Store</dt>
+                <dd>{{ d.store_id }}</dd>
+                <dt>Total rentals</dt>
+                <dd>{{ d.rentalCount }}</dd>
             </dl>
             <h4>Recent rentals</h4>
             <ul class="film-list">
@@ -82,6 +90,50 @@
             }
             <div class="modal-actions">
                 <button class="primary" (click)="closeDetail()">Close</button>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (paymentOpen()) {
+    <div class="modal-backdrop" (click)="closePayment()">
+        <div class="modal modal-wide" (click)="stopClick($event)">
+            <h3>Payment History (Total count:{{paymentCount()}})</h3>
+            @if (paymentLoading()) {
+            <div class="loading">Loading…</div>
+            } @else if (paymentError(); as err) {
+            <div class="error">{{ err }}</div>
+            } @else {
+            <div class="payment-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Film Title</th>
+                            <th>Amount</th>
+                            <th>Payment Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (p of payments(); track p.payment_id) {
+                        <tr>
+                            <td>{{ p.first_name }} {{ p.last_name }}</td>
+                            <td>{{ p.title }}</td>
+                            <td>{{ p.amount }}</td>
+                            <td>{{ p.payment_date }}</td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td class="muted" colspan="4">No Payment History yet.</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+
+            <div class="modal-actions">
+                <button class="primary" (click)="closePayment()">Close</button>
             </div>
         </div>
     </div>

@@ -1,0 +1,76 @@
+<div class="form-page">
+    <h2>{{ mode() === 'edit' ? 'Edit Customer' : 'Add Customer' }}</h2>
+
+    <div class="form-fields">
+        <div class="field">
+            <label>First Name</label>
+            <input [value]="first_name()" (input)="first_name.set($any($event.target).value)" placeholder="John" />
+            @if (first_nameTouched() && !first_nameValid()) {
+            <span class="error">First name is required</span>
+            }
+        </div>
+
+        <div class="field">
+            <label>Last Name</label>
+            <input [value]="last_name()" (input)="last_name.set($any($event.target).value)" placeholder="Doe" />
+            @if (last_nameTouched() && !last_nameValid()) {
+            <span class="error">Last name is required</span>
+            }
+        </div>
+
+        <div class="field">
+            <label>Email</label>
+            <input [value]="email()" (input)="email.set($any($event.target).value)" type="email"
+                placeholder="john@example.com" />
+            @if (emailTouched() && !emailValid()) {
+            <span class="error">Invalid email format</span>
+            }
+        </div>
+
+        <div class="field">
+            <label>Store</label>
+            <select [value]="selectedStoreId() ?? ''" (change)="selectedStoreId.set(+$any($event.target).value)">
+                <option value="" disabled>Select a store</option>
+                @for (s of storeDropdown(); track s.store_id) {
+                <option [value]="s.store_id">Store {{ s.store_id }} — {{ s.address.city_name }}</option>
+                } @empty {
+                <option disabled>No active stores</option>
+                }
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Address</label>
+            <select [value]="selectedAddressId() ?? ''" (change)="selectedAddressId.set(+$any($event.target).value)">
+                <option value="" disabled>Select an address</option>
+                @for (a of addresses(); track a.address_id) {
+                <option [value]="a.address_id">{{ a.address }}, {{ a.city_name }}</option>
+                } @empty {
+                <option disabled>Type to search…</option>
+                }
+            </select>
+            <input type="text" placeholder="Search address…" (input)="onAddressQuery($any($event.target).value)" />
+        </div>
+
+        <div class="field toggle">
+            <label>
+                <input type="checkbox" [checked]="activebool()" (change)="activebool.set($any($event.target).checked)" />
+                Active
+            </label>
+        </div>
+
+        @if (successMessage()) {
+        <p class="success">{{ successMessage() }}</p>
+        }
+        @if (errorMessage()) {
+        <p class="error">{{ errorMessage() }}</p>
+        }
+
+        <div class="form-actions">
+            <button type="button" (click)="goBack()">Cancel</button>
+            <button type="button" (click)="onSubmit()" [disabled]="isSubmitting() || !selectedStoreId() || !selectedAddressId()">
+                {{ isSubmitting() ? 'Saving…' : (mode() === 'edit' ? 'Save changes' : 'Add customer') }}
+            </button>
+        </div>
+    </div>
+</div>

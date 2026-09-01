@@ -1,0 +1,121 @@
+<div class="form-page">
+    <h2>{{ mode() === 'edit' ? 'Edit store ' + storeId() : 'New store' }}</h2>
+
+    @if (mode() === 'edit' && loadError(); as err) {
+    <div class="error">{{ err }}</div>
+    }
+
+    <div class="field">
+        <label>Store manager *</label>
+        @if (mode() === 'new') {
+        <div class="tabs">
+            <button [class.active]="managerMode() === 'pick'" (click)="managerMode.set('pick')">Pick existing</button>
+            <button [class.active]="managerMode() === 'hire'" (click)="managerMode.set('hire')">Hire new</button>
+        </div>
+        }
+
+        @if (managerMode() === 'pick') {
+        <input placeholder="Search staff…" [value]="managerQuery()" (input)="onManagerQuery($any($event.target).value)" />
+        @if (managerQuery() !== '' && managerSuggestions().length) {
+        <ul class="suggestions">
+            @for (s of managerSuggestions(); track s.staff_id) {
+            <li><button (click)="pickManager(s)">
+                {{ s.first_name }} {{ s.last_name }} ·
+                {{ s.manages_store_id !== null ? 'manages store ' + s.manages_store_id : 'no store' }}
+            </button></li>
+            }
+        </ul>
+        }
+        @if (managerWarning(); as warn) {
+        <span class="field-error">{{ warn }}</span>
+        } @else if (managerStaffId() === null && managerQuery() !== '') {
+        <span class="field-error">Pick a staff member from the list.</span>
+        }
+        } @else {
+        <div class="field">
+            <label>First name *</label>
+            <input [value]="newManagerFirst()" (input)="newManagerFirst.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+            <label>Last name *</label>
+            <input [value]="newManagerLast()" (input)="newManagerLast.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+            <label>Email</label>
+            <input [value]="newManagerEmail()" (input)="newManagerEmail.set($any($event.target).value)" />
+        </div>
+        }
+    </div>
+
+    <div class="field">
+        <label>Address *</label>
+        <div class="tabs">
+            <button [class.active]="addressMode() === 'select'" (click)="onAddressMode('select')">Select existing</button>
+            <button [class.active]="addressMode() === 'new'" (click)="onAddressMode('new')">Enter new</button>
+        </div>
+
+        @if (addressMode() === 'select') {
+        <input placeholder="Search address…" [value]="addressQuery()" (input)="onAddressQuery($any($event.target).value)" />
+        @if (addressQuery() !== '' && addressSuggestions().length) {
+        <ul class="suggestions">
+            @for (a of addressSuggestions(); track a.address_id) {
+            <li><button (click)="pickAddress(a)">
+                {{ a.address }}{{ a.address2 ? ', ' + a.address2 : '' }}, {{ a.city_name }} — {{ a.district }}
+            </button></li>
+            }
+        </ul>
+        }
+        @if (addressId() === null && addressQuery() !== '') {
+        <span class="field-error">Pick an address from the list.</span>
+        }
+        } @else {
+        <div class="field">
+            <label>Address line *</label>
+            <input [value]="newAddressLine()" (input)="newAddressLine.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+            <label>Address line 2</label>
+            <input [value]="newAddress2()" (input)="newAddress2.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+            <label>District</label>
+            <input [value]="newDistrict()" (input)="newDistrict.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+            <label>City *</label>
+            <input placeholder="Search city…" [value]="newCityQuery()" (input)="onCityQuery($any($event.target).value)" />
+            @if (newCityQuery() !== '' && newCitySuggestions().length) {
+            <ul class="suggestions">
+                @for (c of newCitySuggestions(); track c.city_id) {
+                <li><button (click)="pickCity(c)">{{ c.name }}, {{ c.country_name }}</button></li>
+                }
+            </ul>
+            }
+            @if (newCityId() === null && newCityQuery() !== '') {
+            <span class="field-error">Pick a city from the list.</span>
+            }
+        </div>
+        <div class="field">
+            <label>Postal code</label>
+            <input [value]="newPostal()" (input)="newPostal.set($any($event.target).value)" />
+        </div>
+        <div class="field">
+            <label>Phone *</label>
+            <input [value]="newPhone()" (input)="newPhone.set($any($event.target).value)" />
+        </div>
+        }
+    </div>
+
+    @if (mode() === 'edit') {
+    <div class="field toggle">
+        <label><input type="checkbox" [checked]="active()" (change)="active.set($any($event.target).checked)" /> Store is active</label>
+    </div>
+    }
+
+    <div class="form-actions">
+        <button (click)="cancel()">Cancel</button>
+        <button class="primary" [disabled]="!formValid() || saving()" (click)="submit()">
+            {{ mode() === 'edit' ? 'Save changes' : 'Create store' }}
+        </button>
+    </div>
+</div>

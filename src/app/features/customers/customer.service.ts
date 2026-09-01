@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
-import { CustomerDetail, CustomerPage, CustomerQuery } from './customers.interface';
+import { Injectable, inject } from '@angular/core';
+import { CustomerDetail, CustomerInput, CustomerPage, CustomerPayment, CustomerQuery } from './customers.interface';
 import { Observable } from 'rxjs';
 
-@Service()
+@Injectable({ providedIn: 'root' })
 export class CustomerService {
     private readonly http = inject(HttpClient);
     private readonly baseUrl = 'http://localhost:3000';
@@ -18,5 +18,17 @@ export class CustomerService {
 
     getCustomer(id: number): Observable<CustomerDetail> {
         return this.http.get<CustomerDetail>(`${this.baseUrl}/customers/${id}`);
+    }
+
+    createCustomer(input: CustomerInput): Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}/customers`, input);
+    }
+
+    updateCustomer(id: number, input: CustomerInput): Observable<any> {
+        return this.http.put<any>(`${this.baseUrl}/customers/${id}`, input);
+    }
+
+    getPaymentHistory(id: number): Observable<CustomerPayment[]> {
+        return this.http.get<CustomerPayment[]>(`${this.baseUrl}/payments/${id}`);
     }
 }

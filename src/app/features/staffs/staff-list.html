@@ -1,0 +1,61 @@
+<div class="staff-page">
+    <h2>Staff</h2>
+
+    <div class="toolbar">
+        <a class="primary" (click)="addStaff()">+ Add Staff</a>
+        <input type="search" placeholder="Search staff…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onPageSizeChange($any($event.target).value)">
+            <option [selected]="pageSize() === 10">10</option>
+            <option [selected]="pageSize() === 20">20</option>
+            <option [selected]="pageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th (click)="onSort('staff_id')">ID {{ sortIndicator('staff_id') }}</th>
+                <th (click)="onSort('first_name')">Name {{ sortIndicator('first_name') }}</th>
+                <th>Store Address </th>
+                <th (click)="onSort('email')">Email {{ sortIndicator('email') }}</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (staff of staffs(); track staff.staff_id) {
+            <tr>
+                <td>{{ staff.staff_id }}</td>
+                <td>{{ staff.first_name }} {{ staff.last_name }}</td>
+                <td>{{ staff.address }}</td>
+                <td>{{ staff.email ?? '—' }}</td>
+                <td>{{ staff.username ?? '—' }}</td>
+                <td class="actions">
+                    <button class="primary" (click)="editStaff(staff.staff_id)">Edit</button>
+                    <button class="danger" (click)="deleteStaff(staff.staff_id)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="6">No staff match.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="page() <= 1" (click)="goToPage(page() - 1)">‹ Prev</button>
+        @for (p of pages(); track p) {
+        <button [class.active]="p === page()" (click)="goToPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
+        <span class="info">{{ total() }} staff · page {{ page() }} of {{ totalPages() }}</span>
+    </div>
+
+
+</div>

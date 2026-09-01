@@ -1,0 +1,88 @@
+<div class="film-form-page">
+    <h2>{{ mode() === 'edit' ? 'Edit film' : 'New film' }}</h2>
+
+    @if (loadError(); as err) {
+    <div class="error">{{ err }}</div>
+    }
+
+    <form (ngSubmit)="submit()" #filmForm="ngForm">
+        <div class="form-section">
+            <label for="title">Title *</label>
+            <input id="title" placeholder="Film title" [value]="title()"
+                (input)="title.set($any($event.target).value)" />
+            @if (titleError()) { <span class="field-error">Title is required.</span> }
+
+            <label for="description">Description</label>
+            <textarea id="description" rows="4" placeholder="Short plot summary…" [value]="description()"
+                (input)="description.set($any($event.target).value)"></textarea>
+
+            <div class="grid two">
+                <div>
+                    <label for="release_year">Release year</label>
+                    <input id="release_year" type="number" placeholder="e.g. 2006" [value]="releaseYear() ?? ''"
+                        (input)="onReleaseYearInput($any($event.target).value)" />
+                </div>
+                <div>
+                    <label for="rating">Rating</label>
+                    <select id="rating" [value]="rating()" (change)="rating.set($any($event.target).value)">
+                        @for (r of ratings; track r) {
+                        <option [value]="r">{{ r }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <label for="language">Language *</label>
+            <select id="language" [value]="languageId() ?? ''"
+                (change)="onLanguageChange($any($event.target).value)">
+                <option [ngValue]="null" disabled>Select language…</option>
+                @for (lang of languages(); track lang.language_id) {
+                <option [value]="lang.language_id">{{ lang.name }}</option>
+                }
+            </select>
+            @if (languageError()) { <span class="field-error">Language is required.</span> }
+
+            <div class="grid two">
+                <div>
+                    <label for="rental_duration">Rental duration (days)</label>
+                    <input id="rental_duration" type="number" placeholder="e.g. 3" [value]="rentalDuration() ?? ''"
+                        (input)="onRentalDurationInput($any($event.target).value)" />
+                </div>
+                <div>
+                    <label for="rental_rate">Rental rate ($)</label>
+                    <input id="rental_rate" type="text" placeholder="e.g. 4.99" [value]="rentalRate()"
+                        (input)="rentalRate.set($any($event.target).value)" />
+                </div>
+                <div>
+                    <label for="length">Length (min)</label>
+                    <input id="length" type="number" placeholder="e.g. 120" [value]="length() ?? ''"
+                        (input)="onLengthInput($any($event.target).value)" />
+                </div>
+                <div>
+                    <label for="replacement_cost">Replacement cost ($)</label>
+                    <input id="replacement_cost" type="text" placeholder="e.g. 19.99" [value]="replacementCost()"
+                        (input)="replacementCost.set($any($event.target).value)" />
+                </div>
+            </div>
+
+            <label>Special features</label>
+            <div class="checkbox-group">
+                @for (feature of specialFeaturesOptions; track feature) {
+                <label class="checkbox">
+                    <input type="checkbox"
+                        [checked]="specialFeatures().includes(feature)"
+                        (change)="toggleSpecialFeature(feature, $any($event.target).checked)" />
+                    {{ feature }}
+                </label>
+                }
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" (click)="cancel()">Cancel</button>
+            <button type="submit" class="primary" [disabled]="!formValid() || saving()">
+                {{ saving() ? 'Saving…' : (mode() === 'edit' ? 'Save changes' : 'Create film') }}
+            </button>
+        </div>
+    </form>
+</div>
