@@ -1,0 +1,61 @@
+<div class="payments-page">
+    <h2>Payments</h2>
+
+    <div class="toolbar">
+        <a class="primary" (click)="addPayment()">+ Record Payment</a>
+        <input type="search" placeholder="Search customer or film…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+        <div class="spacer"></div>
+        <select (change)="onPageSizeChange($any($event.target).value)">
+            <option [selected]="pageSize() === 10">10</option>
+            <option [selected]="pageSize() === 20">20</option>
+            <option [selected]="pageSize() === 50">50</option>
+        </select>
+        <span>per page</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th (click)="onSort('payment_id')">ID {{ sortIndicator('payment_id') }}</th>
+                <th (click)="onSort('customer_id')">Customer {{ sortIndicator('customer_id') }}</th>
+                <th>Staff</th>
+                <th>Film</th>
+                <th (click)="onSort('amount')">Amount {{ sortIndicator('amount') }}</th>
+                <th (click)="onSort('payment_date')">Date {{ sortIndicator('payment_date') }}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (p of payments(); track p.payment_id) {
+            <tr>
+                <td>{{ p.payment_id }}</td>
+                <td>{{ p.first_name }} {{ p.last_name }}</td>
+                <td>{{ p.staff_name || '—' }}</td>
+                <td>{{ p.title ?? '—' }}</td>
+                <td>${{ p.amount }}</td>
+                <td>{{ fmtDate(p.payment_date) }}</td>
+                <td class="actions">
+                    <button class="primary" (click)="editPayment(p.payment_id)">Edit</button>
+                    <button class="danger" (click)="deletePayment(p.payment_id)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="7">No payments match.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+
+    <div class="pagination">
+        <button [disabled]="page() <= 1" (click)="goToPage(page() - 1)">‹ Prev</button>
+        @for (p of pages(); track p) {
+        <button [class.active]="p === page()" (click)="goToPage(p)">{{ p }}</button>
+        }
+        <button [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next ›</button>
+        <span class="info">{{ total() }} payments · page {{ page() }} of {{ totalPages() }}</span>
+    </div>
+</div>
