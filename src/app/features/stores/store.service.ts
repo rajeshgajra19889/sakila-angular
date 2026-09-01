@@ -4,11 +4,12 @@ import { Observable } from 'rxjs';
 import {
     AddressInput, AddressSuggestion, CitySuggestion, StaffSuggestion, Store, StoreInput, StoreStats
 } from './store';
+import { environment } from '../../../environments/environment';
 
 @Service()
 export class StoreService {
     private readonly http = inject(HttpClient);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     listStores(): Observable<Store[]> {
         return this.http.get<Store[]>(`${this.baseUrl}/stores`);

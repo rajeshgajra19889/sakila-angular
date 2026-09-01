@@ -2,11 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { CustomerDetail, CustomerInput, CustomerPage, CustomerPayment, CustomerQuery } from './customers.interface';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
     private readonly http = inject(HttpClient);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     listCustomers(query: CustomerQuery): Observable<CustomerPage> {
         let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);

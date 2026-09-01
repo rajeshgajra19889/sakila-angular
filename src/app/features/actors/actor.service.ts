@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Actor, ActorDetail, ActorInput, ActorPage } from './actor';
+import { environment } from '../../../environments/environment';
 
 export interface ActorQuery {
     page: number;
@@ -14,7 +15,7 @@ export interface ActorQuery {
 @Service()
 export class ActorService {
     private readonly http = inject(HttpClient);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     listActors(query: ActorQuery): Observable<ActorPage> {
         let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);

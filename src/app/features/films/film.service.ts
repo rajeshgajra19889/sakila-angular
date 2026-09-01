@@ -3,6 +3,7 @@ import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Film, TopRentedFilm, Page, FilmInput, Language } from './film';
 import { Actor } from '../actors/actor';
+import { environment } from '../../../environments/environment';
 
 
 export interface FilmQuery {
@@ -16,7 +17,7 @@ export interface FilmQuery {
 @Service()
 export class FilmService {
     private readonly http = inject(HttpClient);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     listFilms(query: FilmQuery): Observable<Page<Film>> {
         let params = new HttpParams()

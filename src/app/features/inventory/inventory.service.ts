@@ -2,11 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Inventory, InventoryDetail, InventoryPage, InventoryQuery, StockSummaryPage, StockSummaryRow, Renter } from './inventory';
+import { environment } from '../../../environments/environment';
 
 @Service()
 export class InventoryService {
     private readonly http = inject(HttpClient);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     listInventory(query: InventoryQuery): Observable<InventoryPage> {
         let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);

@@ -2,11 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Staff, StaffPage, StaffQuery, StaffInput, StaffDetail } from './staff';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Service()
 export class StaffService {
    private readonly http = inject(HttpClient);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     listStaff(query: StaffQuery): Observable<StaffPage> {
         let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);

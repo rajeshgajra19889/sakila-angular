@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface StaffProfile {
     staff_id: number;
@@ -17,7 +18,7 @@ const TOKEN_KEY = 'sakila_token';
 export class AuthService {
     private readonly http = inject(HttpClient);
     private readonly router = inject(Router);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     private readonly _token = signal<string | null>(localStorage.getItem(TOKEN_KEY));
     readonly token = this._token.asReadonly();

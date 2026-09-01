@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Hold, HoldInput, HoldPage, PromoteInput, PromoteResult, WaitlistEntry, WaitlistInput, WaitlistPage } from './reservation';
+import { environment } from '../../../environments/environment';
 
 interface PageQuery {
     page: number;
@@ -18,7 +19,7 @@ function pagination(query: PageQuery): HttpParams {
 @Service()
 export class ReservationService {
     private readonly http = inject(HttpClient);
-    private readonly baseUrl = 'http://localhost:3000';
+    private readonly baseUrl = environment.apiBaseUrl;
 
     listHolds(query: PageQuery): Observable<HoldPage> {
         return this.http.get<HoldPage>(`${this.baseUrl}/holds`, { params: pagination(query) });
