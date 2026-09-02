@@ -22,6 +22,7 @@ export const routes: Routes = [
             { path: 'inventory/new', loadComponent: () => import('./features/inventory/inventory-form-page').then(m => m.InventoryFormPage) },
             { path: 'inventory/:id/edit', loadComponent: () => import('./features/inventory/inventory-form-page').then(m => m.InventoryFormPage) },
             { path: 'reservations', loadComponent: () => import('./features/reservations/reservation-page').then(m => m.ReservationPage) },
+            { path: 'revenue', loadComponent: () => import('./features/revenue/revenue-page').then(m => m.RevenuePage) },
             { path: 'stores', loadComponent: () => import('./features/stores/stores-page').then(m => m.StoresPage) },
             { path: 'stores/new', loadComponent: () => import('./features/stores/stores-form-page').then(m => m.StoresFormPage) },
             { path: 'stores/:id', loadComponent: () => import('./features/stores/store-stats-page').then(m => m.StoreStatsPage) },

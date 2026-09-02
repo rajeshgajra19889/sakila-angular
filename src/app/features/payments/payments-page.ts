@@ -1,6 +1,10 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { PaymentService } from './payment.service';
 import { Payment, PaymentQuery } from './payment';
+import { StoreService } from '../stores/store.service';
+import { Store } from '../stores/store';
+import { CustomerService } from '../customers/customer.service';
+import { Customer } from '../customers/customers.interface';
 import { ToastService } from '../../core/toast/toast.service';
 import { Router } from '@angular/router';
 
@@ -12,6 +16,8 @@ import { Router } from '@angular/router';
 })
 export class PaymentsPage implements OnInit {
   private readonly paymentService = inject(PaymentService);
+  private readonly storeService = inject(StoreService);
+  private readonly customerService = inject(CustomerService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
 
@@ -22,6 +28,13 @@ export class PaymentsPage implements OnInit {
   protected readonly search = signal("");
   protected readonly sortBy = signal("payment_id");
   protected readonly sortOrder = signal<"asc" | "desc">("asc");
+
+  protected readonly stores = signal<Store[]>([]);
+  protected readonly storeId = signal<number | null>(null);
+  protected readonly customers = signal<Customer[]>([]);
+  protected readonly customerId = signal<number | null>(null);
+  protected readonly dateFrom = signal('');
+  protected readonly dateTo = signal('');
   protected readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
   protected readonly pages = computed(() => {
     const current = this.page();
@@ -35,6 +48,14 @@ export class PaymentsPage implements OnInit {
 
   protected readonly loading = signal(true);
   ngOnInit(): void {
+    this.storeService.listStores().subscribe({
+      next: s => this.stores.set(s),
+      error: () => this.toast.show('Failed to load stores', 'error')
+    });
+    this.customerService.listCustomers({ page: 1, pageSize: 500 }).subscribe({
+      next: c => this.customers.set(c.items),
+      error: () => this.toast.show('Failed to load customers', 'error')
+    });
     this.loadPayments();
   }
 
@@ -43,6 +64,10 @@ export class PaymentsPage implements OnInit {
       page: this.page(),
       pageSize: this.pageSize(),
       search: this.search(),
+      customerId: this.customerId() ?? undefined,
+      storeId: this.storeId() ?? undefined,
+      dateFrom: this.dateFrom() || undefined,
+      dateTo: this.dateTo() || undefined,
       sortBy: this.sortBy(),
       sortOrder: this.sortOrder(),
     };
@@ -91,6 +116,36 @@ export class PaymentsPage implements OnInit {
 
   fmtDate(iso: string): string {
     return iso ? iso.slice(0, 10) : '—';
+  }
+
+  onStoreChange(value: string) {
+    this.storeId.set(value === '' || value === 'null' ? null : Number(value));
+    this.page.set(1);
+    this.loadPayments();
+  }
+  onCustomerChange(value: string) {
+    this.customerId.set(value === '' || value === 'null' ? null : Number(value));
+    this.page.set(1);
+    this.loadPayments();
+  }
+  onDateFrom(value: string) {
+    this.dateFrom.set(value);
+    this.page.set(1);
+    this.loadPayments();
+  }
+  onDateTo(value: string) {
+    this.dateTo.set(value);
+    this.page.set(1);
+    this.loadPayments();
+  }
+  clearFilters() {
+    this.storeId.set(null);
+    this.customerId.set(null);
+    this.dateFrom.set('');
+    this.dateTo.set('');
+    this.search.set('');
+    this.page.set(1);
+    this.loadPayments();
   }
 
   addPayment() {

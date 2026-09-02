@@ -4,6 +4,7 @@ export interface Payment {
     first_name: string;
     last_name: string;
     staff_name: string;
+    store_id: number | null;
     title: string | null;
     amount: string;
     payment_date: string;
@@ -21,6 +22,9 @@ export interface PaymentQuery {
     pageSize: number;
     search?: string;
     customerId?: number;
+    storeId?: number;
+    dateFrom?: string;
+    dateTo?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
 }

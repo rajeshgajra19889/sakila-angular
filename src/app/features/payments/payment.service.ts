@@ -13,6 +13,9 @@ export class PaymentService {
         let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);
         if (query.search) params = params.set('search', query.search);
         if (query.customerId) params = params.set('customer_id', query.customerId.toString());
+        if (query.storeId) params = params.set('store_id', query.storeId.toString());
+        if (query.dateFrom) params = params.set('dateFrom', query.dateFrom);
+        if (query.dateTo) params = params.set('dateTo', query.dateTo);
         if (query.sortBy) params = params.set('sortBy', query.sortBy);
         if (query.sortOrder) params = params.set('sortOrder', query.sortOrder);
         return this.http.get<PaymentPage>(`${this.baseUrl}/payments`, { params });

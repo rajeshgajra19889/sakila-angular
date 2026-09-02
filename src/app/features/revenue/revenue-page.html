@@ -1,0 +1,82 @@
+<h1>Revenue reports</h1>
+
+<div class="toolbar filters">
+    <label>Store
+        <select [value]="storeId()" (change)="onStoreChange($any($event.target).value)">
+            <option [value]="null">All</option>
+            @for (s of stores(); track s.store_id) {
+            <option [value]="s.store_id">Store {{ s.store_id }}</option>
+            }
+        </select>
+    </label>
+    <label>Customer
+        <select [value]="customerId()" (change)="onCustomerChange($any($event.target).value)">
+            <option [value]="null">All</option>
+            @for (c of customers(); track c.customer_id) {
+            <option [value]="c.customer_id">{{ c.first_name }} {{ c.last_name }}</option>
+            }
+        </select>
+    </label>
+    <label>From
+        <input type="date" [value]="dateFrom()" (input)="onDateFrom($any($event.target).value)" />
+    </label>
+    <label>To
+        <input type="date" [value]="dateTo()" (input)="onDateTo($any($event.target).value)" />
+    </label>
+    <a class="link" (click)="clearFilters()">Clear filters</a>
+</div>
+
+@if (loading()) {
+<p class="muted">Loading…</p>
+} @else if (report(); as r) {
+
+<div class="cards">
+    <div class="card"><span class="card-label">Total revenue</span><span class="card-value">{{ fmt(r.summary.totalAmount) }}</span></div>
+    <div class="card"><span class="card-label">Payments</span><span class="card-value">{{ r.summary.totalPayments }}</span></div>
+    <div class="card"><span class="card-label">Average amount</span><span class="card-value">{{ fmt(r.summary.avgAmount) }}</span></div>
+</div>
+
+<div class="panels">
+    <section class="panel">
+        <h2>Revenue by month</h2>
+        <div class="bars">
+            @for (m of r.monthly; track m.month) {
+            <div class="bar-wrap" [title]="m.month + ': ' + fmt(m.totalAmount)">
+                <div class="bar" [style.height.%]="barPercent(m.totalAmount)"></div>
+                <span class="bar-label">{{ m.month }}</span>
+            </div>
+            }
+            @empty {
+            <span class="muted">No revenue in this range.</span>
+            }
+        </div>
+    </section>
+    <section class="panel">
+        <h2>By store</h2>
+        <table>
+            <thead><tr><th>Store</th><th>Payments</th><th>Revenue</th></tr></thead>
+            <tbody>
+                @for (s of r.byStore; track s.store_id) {
+                <tr><td>{{ s.store_name }}</td><td>{{ s.totalPayments }}</td><td>{{ fmt(s.totalAmount) }}</td></tr>
+                }
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<section class="panel">
+    <h2>Top customers by spend</h2>
+    <table>
+        <thead><tr><th>Customer</th><th>Payments</th><th>Spent</th></tr></thead>
+        <tbody>
+            @for (c of r.topCustomers; track c.customer_id) {
+            <tr><td>{{ c.name }}</td><td>{{ c.totalPayments }}</td><td>{{ fmt(c.totalAmount) }}</td></tr>
+            }
+            @empty {
+            <tr><td colspan="3" class="muted">No customers in this range.</td></tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+}
