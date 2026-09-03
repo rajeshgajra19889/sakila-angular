@@ -1,0 +1,30 @@
+<div class="list-page">
+    <h2>Addresses</h2>
+    <div class="toolbar">
+        <a class="primary" (click)="add()">+ Add Address</a>
+        <input type="search" placeholder="Search address, district or city…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+    </div>
+    <table>
+        <thead><tr><th>ID</th><th>Address</th><th>District</th><th>City</th><th>Country</th><th>Phone</th><th>Actions</th></tr></thead>
+        <tbody>
+            @for (a of addresses(); track a.address_id) {
+            <tr>
+                <td>{{ a.address_id }}</td>
+                <td>{{ a.address }}{{ a.address2 ? ', ' + a.address2 : '' }}</td>
+                <td>{{ a.district }}</td>
+                <td>{{ a.city_name }}</td>
+                <td>{{ a.country_name }}</td>
+                <td>{{ a.phone }}</td>
+                <td class="actions">
+                    <button class="primary" (click)="edit(a.address_id)">Edit</button>
+                    <button class="danger" (click)="delete(a.address_id)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr><td colspan="7">No addresses match.</td></tr>
+            }
+        </tbody>
+    </table>
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+</div>

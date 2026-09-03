@@ -39,6 +39,12 @@ export const routes: Routes = [
             { path: 'categories', loadComponent: () => import('./features/categories/categories-page').then(m => m.CategoriesPage) },
             { path: 'categories/new', loadComponent: () => import('./features/categories/category-form-page').then(m => m.CategoryFormPage) },
             { path: 'categories/:id/edit', loadComponent: () => import('./features/categories/category-form-page').then(m => m.CategoryFormPage) },
+            { path: 'cities', loadComponent: () => import('./features/addresses/cities-page').then(m => m.CitiesPage) },
+            { path: 'cities/new', loadComponent: () => import('./features/addresses/city-form-page').then(m => m.CityFormPage) },
+            { path: 'cities/:id/edit', loadComponent: () => import('./features/addresses/city-form-page').then(m => m.CityFormPage) },
+            { path: 'addresses', loadComponent: () => import('./features/addresses/addresses-page').then(m => m.AddressesPage) },
+            { path: 'addresses/new', loadComponent: () => import('./features/addresses/address-form-page').then(m => m.AddressFormPage) },
+            { path: 'addresses/:id/edit', loadComponent: () => import('./features/addresses/address-form-page').then(m => m.AddressFormPage) },
         ]
     },
     { path: '**', redirectTo: '' }

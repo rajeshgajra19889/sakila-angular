@@ -1,0 +1,27 @@
+<div class="list-page">
+    <h2>Cities</h2>
+    <div class="toolbar">
+        <a class="primary" (click)="add()">+ Add City</a>
+        <input type="search" placeholder="Search city or country…" [value]="search()"
+            (input)="onSearch($any($event.target).value)" />
+    </div>
+    <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Country</th><th>Actions</th></tr></thead>
+        <tbody>
+            @for (c of cities(); track c.city_id) {
+            <tr>
+                <td>{{ c.city_id }}</td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.country_name }}</td>
+                <td class="actions">
+                    <button class="primary" (click)="edit(c.city_id)">Edit</button>
+                    <button class="danger" (click)="delete(c.city_id)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr><td colspan="4">No cities match.</td></tr>
+            }
+        </tbody>
+    </table>
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+</div>

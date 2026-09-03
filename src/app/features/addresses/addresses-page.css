@@ -1,0 +1,12 @@
+.list-page { padding: 16px; font-family: sans-serif; }
+.toolbar { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+.toolbar .primary { background: #1976d2; color: #fff; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; }
+.toolbar input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; width: 260px; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; }
+th { background: #f5f5f5; }
+.actions button { margin-right: 4px; padding: 3px 8px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
+.actions .primary { background: #1976d2; color: #fff; border-color: #1976d2; }
+.actions .danger { border-color: #e2b6b0; color: #c0392b; }
+.loading { margin: 8px 0; color: #888; }
+.hidden { display: none; }

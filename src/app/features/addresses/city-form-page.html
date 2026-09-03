@@ -1,0 +1,25 @@
+<div class="form-page">
+    <h2>{{ mode() === 'edit' ? 'Edit city' : 'New city' }}</h2>
+    @if (loadError(); as err) { <div class="error">{{ err }}</div> }
+    <div class="field">
+        <label>Name *</label>
+        <input [value]="name()" (input)="name.set($any($event.target).value)" />
+        @if (nameError()) { <span class="field-error">Name is required.</span> }
+    </div>
+    <div class="field">
+        <label>Country *</label>
+        <select [value]="countryId()" (change)="onCountryChange($any($event.target).value)">
+            <option [value]="null" disabled>Select country…</option>
+            @for (c of countries(); track c.country_id) {
+            <option [value]="c.country_id">{{ c.name }}</option>
+            }
+        </select>
+        @if (countryError()) { <span class="field-error">Country is required.</span> }
+    </div>
+    <div class="form-actions">
+        <button (click)="cancel()">Cancel</button>
+        <button class="primary" [disabled]="!formValid() || saving()" (click)="submit()">
+            {{ mode() === 'edit' ? 'Save changes' : 'Create city' }}
+        </button>
+    </div>
+</div>

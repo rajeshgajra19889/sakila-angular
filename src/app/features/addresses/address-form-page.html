@@ -1,0 +1,49 @@
+<div class="form-page">
+    <h2>{{ mode() === 'edit' ? 'Edit address' : 'New address' }}</h2>
+    @if (loadError(); as err) { <div class="error">{{ err }}</div> }
+
+    <div class="field">
+        <label>Address line *</label>
+        <input [value]="addressLine()" (input)="addressLine.set($any($event.target).value)" />
+        @if (addressError()) { <span class="field-error">Address is required.</span> }
+    </div>
+    <div class="field">
+        <label>Address line 2</label>
+        <input [value]="address2()" (input)="address2.set($any($event.target).value)" />
+    </div>
+    <div class="field">
+        <label>District *</label>
+        <input [value]="district()" (input)="district.set($any($event.target).value)" />
+        @if (districtError()) { <span class="field-error">District is required.</span> }
+    </div>
+    <div class="field">
+        <label>City *</label>
+        <input placeholder="Search city…" [value]="cityQuery()" (input)="onCityQuery($any($event.target).value)" />
+        @if (cityQuery() !== '' && citySuggestions().length) {
+        <ul class="suggestions">
+            @for (c of citySuggestions(); track c.city_id) {
+            <li><button (click)="pickCity(c)">{{ c.name }}, {{ c.country_name }}</button></li>
+            }
+        </ul>
+        }
+        @if (cityId() === null && cityQuery() !== '') {
+        <span class="field-error">Pick a city from the list.</span>
+        }
+    </div>
+    <div class="field">
+        <label>Postal code</label>
+        <input [value]="postalCode()" (input)="postalCode.set($any($event.target).value)" />
+    </div>
+    <div class="field">
+        <label>Phone *</label>
+        <input [value]="phone()" (input)="phone.set($any($event.target).value)" />
+        @if (phoneError()) { <span class="field-error">Phone is required.</span> }
+    </div>
+
+    <div class="form-actions">
+        <button (click)="cancel()">Cancel</button>
+        <button class="primary" [disabled]="!formValid() || saving()" (click)="submit()">
+            {{ mode() === 'edit' ? 'Save changes' : 'Create address' }}
+        </button>
+    </div>
+</div>
