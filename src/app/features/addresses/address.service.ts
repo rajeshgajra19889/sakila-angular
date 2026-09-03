@@ -17,10 +17,13 @@ export class AddressService {
         return this.http.get<any>(`${this.baseUrl}/addresses`, { params });
     }
 
-    listAddresses(search?: string): Observable<Address[]> {
+    listAddresses(q?: { search?: string; page?: number; pageSize?: number }) {
         let params = new HttpParams();
-        if (search) params = params.set('search', search);
-        return this.http.get<Address[]>(`${this.baseUrl}/addresses`, { params });
+        if (q?.search) params = params.set('search', q.search);
+        if (q?.page) params = params.set('page', q.page.toString());
+        if (q?.pageSize) params = params.set('pageSize', q.pageSize.toString());
+        params = params.set('paged', '1');
+        return this.http.get<{ items: Address[]; total: number; page: number; pageSize: number }>(`${this.baseUrl}/addresses`, { params });
     }
     getAddress(id: number): Observable<Address> {
         return this.http.get<Address>(`${this.baseUrl}/addresses/${id}`);
@@ -35,9 +38,16 @@ export class AddressService {
         return this.http.delete<{ success: boolean; message: string }>(`${this.baseUrl}/addresses/${id}`);
     }
 
-    listCities(search?: string): Observable<City[]> {
+    listCities(q?: { search?: string; page?: number; pageSize?: number }): Observable<{ items: City[]; total: number; page: number; pageSize: number }> {
         let params = new HttpParams();
-        if (search) params = params.set('search', search);
+        if (q?.search) params = params.set('search', q.search);
+        if (q?.page) params = params.set('page', q.page.toString());
+        if (q?.pageSize) params = params.set('pageSize', q.pageSize.toString());
+        params = params.set('paged', '1');
+        return this.http.get<{ items: City[]; total: number; page: number; pageSize: number }>(`${this.baseUrl}/cities`, { params });
+    }
+    searchCities(search: string): Observable<City[]> {
+        const params = new HttpParams().set('search', search);
         return this.http.get<City[]>(`${this.baseUrl}/cities`, { params });
     }
     getCity(id: number): Observable<City> {

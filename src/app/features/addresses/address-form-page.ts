@@ -69,7 +69,7 @@ export class AddressFormPage implements OnInit {
         this.cityQuery.set(value);
         const q = value.trim().toLowerCase();
         if (q === '') { this.citySuggestions.set([]); return; }
-        this.addrService.listCities(q).subscribe({
+        this.addrService.searchCities(q).subscribe({
             next: rows => this.citySuggestions.set(rows),
             error: () => this.citySuggestions.set([])
         });

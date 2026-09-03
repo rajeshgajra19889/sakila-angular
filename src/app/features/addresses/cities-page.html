@@ -23,5 +23,12 @@
             }
         </tbody>
     </table>
+    @if (pageCount() > 1) {
+    <div class="pager">
+        <button class="primary" (click)="prev()" [disabled]="page() <= 1">Prev</button>
+        <span>Page {{ page() }} of {{ pageCount() }} ({{ total() }} cities)</span>
+        <button class="primary" (click)="next()" [disabled]="page() >= pageCount()">Next</button>
+    </div>
+    }
     <div class="loading" [class.hidden]="!loading()">Loading…</div>
 </div>
