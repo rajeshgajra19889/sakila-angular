@@ -9,9 +9,9 @@
     <a routerLink="/inventory" routerLinkActive="active">Inventory</a>
     <a routerLink="/reservations" routerLinkActive="active">Reservations</a>
     <a routerLink="/revenue" routerLinkActive="active">Revenue</a>
-    <a routerLink="/stores" routerLinkActive="active">Stores</a>
+    <a routerLink="/stores" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Stores</a>
     <a routerLink="/stores/comparison" routerLinkActive="active">Compare Stores</a>
-     <a routerLink="/staffs" routerLinkActive="active">Staff</a>
+     <a routerLink="/staffs" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Staff</a>
     <a routerLink="/staffs/performance" routerLinkActive="active">Staff Performance</a>
     <a routerLink="/languages" routerLinkActive="active">Languages</a>
     <a routerLink="/categories" routerLinkActive="active">Categories</a>
