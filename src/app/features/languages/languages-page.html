@@ -1,0 +1,24 @@
+<div class="list-page">
+    <h2>Languages</h2>
+    <div class="toolbar">
+        <a class="primary" (click)="add()">+ Add Language</a>
+    </div>
+    <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Actions</th></tr></thead>
+        <tbody>
+            @for (l of languages(); track l.language_id) {
+            <tr>
+                <td>{{ l.language_id }}</td>
+                <td>{{ l.name }}</td>
+                <td class="actions">
+                    <button class="primary" (click)="edit(l.language_id)">Edit</button>
+                    <button class="danger" (click)="delete(l.language_id)">Delete</button>
+                </td>
+            </tr>
+            } @empty {
+            <tr><td colspan="3">No languages.</td></tr>
+            }
+        </tbody>
+    </table>
+    <div class="loading" [class.hidden]="!loading()">Loading…</div>
+</div>

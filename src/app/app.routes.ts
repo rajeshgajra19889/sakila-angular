@@ -33,6 +33,12 @@ export const routes: Routes = [
             { path: 'staffs', loadComponent: () => import('./features/staffs/staff-list').then(m => m.StaffList) },
             { path: 'staffs/new', loadComponent: () => import('./features/staffs/staff-page').then(m => m.StaffPage) },
             { path: 'staffs/:id/edit', loadComponent: () => import('./features/staffs/staff-page').then(m => m.StaffPage) },
+            { path: 'languages', loadComponent: () => import('./features/languages/languages-page').then(m => m.LanguagesPage) },
+            { path: 'languages/new', loadComponent: () => import('./features/languages/language-form-page').then(m => m.LanguageFormPage) },
+            { path: 'languages/:id/edit', loadComponent: () => import('./features/languages/language-form-page').then(m => m.LanguageFormPage) },
+            { path: 'categories', loadComponent: () => import('./features/categories/categories-page').then(m => m.CategoriesPage) },
+            { path: 'categories/new', loadComponent: () => import('./features/categories/category-form-page').then(m => m.CategoryFormPage) },
+            { path: 'categories/:id/edit', loadComponent: () => import('./features/categories/category-form-page').then(m => m.CategoryFormPage) },
         ]
     },
     { path: '**', redirectTo: '' }
