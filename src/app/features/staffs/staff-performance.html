@@ -1,0 +1,42 @@
+<div class="perf-page">
+    <div class="toolbar">
+        <button (click)="back()">← Staff</button>
+        <div class="spacer"></div>
+        <h2>Staff performance</h2>
+    </div>
+
+    @if (loading()) { <p class="muted">Loading…</p> } @else if (totals(); as t) {
+    <div class="cards">
+        <div class="card"><div class="num">{{ t.staff }}</div><div class="label">Staff</div></div>
+        <div class="card"><div class="num">{{ fmt(t.revenue) }}</div><div class="label">Total revenue</div></div>
+        <div class="card"><div class="num">{{ t.payments }}</div><div class="label">Payments</div></div>
+        <div class="card"><div class="num">{{ t.rentals }}</div><div class="label">Rentals</div></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th>Staff</th><th>Username</th><th>Store</th><th>Revenue</th><th>Payments</th><th>Rentals</th><th>Avg payment</th><th>Active</th><th></th></tr>
+        </thead>
+        <tbody>
+            @for (r of rows(); track r.staff_id) {
+            <tr>
+                <td>{{ r.name }}</td>
+                <td>{{ r.username }}</td>
+                <td>Store {{ r.store_id }}</td>
+                <td>
+                    <div class="rev">
+                        <span>{{ fmt(r.revenue) }}</span>
+                        <div class="rev-track"><div class="rev-fill" [style.width.%]="(r.revenue / maxRevenue()) * 100"></div></div>
+                    </div>
+                </td>
+                <td>{{ r.payments }}</td>
+                <td>{{ r.rentals }}</td>
+                <td>{{ r.payments ? fmt(r.revenue / r.payments) : '—' }}</td>
+                <td>{{ r.active ? 'Yes' : 'No' }}</td>
+                <td><button class="primary" (click)="openStaff(r.staff_id)">Details</button></td>
+            </tr>
+            } @empty { <tr><td colspan="9" class="muted">No staff.</td></tr> }
+        </tbody>
+    </table>
+    }
+</div>

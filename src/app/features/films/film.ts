@@ -37,6 +37,17 @@ export interface TopRentedFilm {
     times_rented: string;
 }
 
+export interface FilmInventoryCopy {
+    inventory_id: number;
+    store_id: number;
+    rented: boolean;
+}
+
+export interface StoreOption {
+    store_id: number;
+    name: string;
+}
+
 export interface Page<T> {
     items: T[];
     total: number;

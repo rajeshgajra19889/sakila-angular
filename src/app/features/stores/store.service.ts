@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-    AddressInput, AddressSuggestion, CitySuggestion, StaffSuggestion, Store, StoreInput, StoreStats
+    AddressInput, AddressSuggestion, CitySuggestion, StaffSuggestion, Store, StoreComparison, StoreInput, StoreStats
 } from './store';
 import { environment } from '../../../environments/environment';
 
@@ -21,6 +21,10 @@ export class StoreService {
 
     getStoreStats(id: number): Observable<StoreStats> {
         return this.http.get<StoreStats>(`${this.baseUrl}/stores/${id}/stats`);
+    }
+
+    getStoreComparison(): Observable<StoreComparison[]> {
+        return this.http.get<StoreComparison[]>(`${this.baseUrl}/stores/comparison`);
     }
 
     createStore(input: StoreInput): Observable<Store> {

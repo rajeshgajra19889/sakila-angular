@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { Staff, StaffPage, StaffQuery, StaffInput, StaffDetail } from './staff';
+import { Staff, StaffPage, StaffQuery, StaffInput, StaffDetail, StaffPerformance } from './staff';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -31,6 +31,10 @@ export class StaffService {
 
     deleteStaff(id: number): Observable<{ success: boolean; message: string }> {
         return this.http.delete<{ success: boolean; message: string }>(`${this.baseUrl}/staff/${id}`);
+    }
+
+    getPerformance(): Observable<StaffPerformance[]> {
+        return this.http.get<StaffPerformance[]>(`${this.baseUrl}/staff/performance`);
     }
 
 }

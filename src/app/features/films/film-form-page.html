@@ -97,4 +97,40 @@
             </button>
         </div>
     </form>
+
+    @if (mode() === 'edit') {
+    <div class="inventory-panel">
+        <h3>Inventory</h3>
+        @if (invLoading()) { <p class="muted">Loading inventory…</p> } @else {
+            @if (inventoryByStore(); as byStore) {
+            <table class="inv-table">
+                <thead><tr><th>Store</th><th>Total copies</th><th>Available</th><th>Rented</th><th></th></tr></thead>
+                <tbody>
+                    @for (row of byStore; track row.store_id) {
+                    <tr>
+                        <td>Store {{ row.store_id }}</td>
+                        <td>{{ row.total }}</td>
+                        <td>{{ row.available }}</td>
+                        <td>{{ row.rented }}</td>
+                        <td></td>
+                    </tr>
+                    } @empty { <tr><td colspan="5" class="muted">No copies in stock.</td></tr> }
+                </tbody>
+            </table>
+            }
+
+            <div class="inv-actions">
+                <select id="inv_store" [value]="invStoreId() ?? ''" (change)="onInvStoreChange($any($event.target).value)">
+                    @for (s of stores(); track s.store_id) {
+                    <option [value]="s.store_id">Store {{ s.store_id }}</option>
+                    }
+                </select>
+                <input id="inv_qty" type="number" min="1" max="100" [value]="invQty()" (input)="onInvQtyInput($any($event.target).value)" title="Number of copies to add (1-100)" />
+                <button class="primary" [disabled]="!inventoryValid()" (click)="addCopies()">
+                    {{ invSaving() ? 'Adding…' : 'Add copies' }}
+                </button>
+            </div>
+        }
+    </div>
+    }
 </div>

@@ -1,0 +1,56 @@
+<div class="cmp-page">
+    <div class="toolbar">
+        <button (click)="back()">← Stores</button>
+        <div class="spacer"></div>
+        <h2>Store comparison</h2>
+    </div>
+
+    @if (loading()) { <p class="muted">Loading…</p> } @else if (totals(); as t) {
+    <div class="cards">
+        <div class="card"><div class="num">{{ t.stores }}</div><div class="label">Stores</div></div>
+        <div class="card"><div class="num">{{ t.inventory }}</div><div class="label">Inventory copies</div></div>
+        <div class="card"><div class="num">{{ t.staff }}</div><div class="label">Staff</div></div>
+        <div class="card"><div class="num">{{ fmt(t.revenue) }}</div><div class="label">Total revenue</div></div>
+        <div class="card"><div class="num">{{ t.rentals }}</div><div class="label">Total rentals</div></div>
+        <div class="card"><div class="num">{{ t.customers }}</div><div class="label">Customers served</div></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Store</th>
+                <th>Manager</th>
+                <th>City / Country</th>
+                <th>Revenue</th>
+                <th>Rentals</th>
+                <th>Active</th>
+                <th>Customers</th>
+                <th>Inventory</th>
+                <th>Staff</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (r of rows(); track r.store_id) {
+            <tr>
+                <td>Store {{ r.store_id }}</td>
+                <td>{{ r.manager }}</td>
+                <td>{{ r.city }}, {{ r.country }}</td>
+                <td>
+                    <div class="rev">
+                        <span>{{ fmt(r.revenue) }}</span>
+                        <div class="rev-track"><div class="rev-fill" [style.width.%]="(r.revenue / maxRevenue()) * 100"></div></div>
+                    </div>
+                </td>
+                <td>{{ r.totalRentals }}</td>
+                <td>{{ r.activeRentals }}</td>
+                <td>{{ r.customersServed }}</td>
+                <td>{{ r.inventoryCount }}</td>
+                <td>{{ r.staffCount }}</td>
+                <td><button class="primary" (click)="openStore(r.store_id)">Details</button></td>
+            </tr>
+            } @empty { <tr><td colspan="10" class="muted">No stores.</td></tr> }
+        </tbody>
+    </table>
+    }
+</div>

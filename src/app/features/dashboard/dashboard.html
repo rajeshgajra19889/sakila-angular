@@ -37,6 +37,30 @@
             }
         </div>
     </section>
+    <section class="panel">
+        <h2>Top films</h2>
+        <div class="cats">
+            @for (f of topFilms(); track f.title) {
+            <div class="cat">
+                <span class="cat-name">{{ f.title }}</span>
+                <div class="cat-track"><div class="cat-fill" [style.width.%]="(f.times_rented / listMax(topFilms())) * 100"></div></div>
+                <span class="cat-count">{{ f.times_rented }}</span>
+            </div>
+            }
+        </div>
+    </section>
+    <section class="panel">
+        <h2>Category rentals</h2>
+        <div class="cats">
+            @for (c of topCategoryRentals(); track c.name) {
+            <div class="cat">
+                <span class="cat-name">{{ c.name }}</span>
+                <div class="cat-track"><div class="cat-fill" [style.width.%]="(c.rentals / listMax(topCategoryRentals())) * 100"></div></div>
+                <span class="cat-count">{{ c.rentals }}</span>
+            </div>
+            }
+        </div>
+    </section>
 </div>
 
 <section class="panel">

@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Film, TopRentedFilm, Page, FilmInput, Language } from './film';
+import { Film, TopRentedFilm, Page, FilmInput, Language, FilmInventoryCopy } from './film';
 import { Actor } from '../actors/actor';
 import { Category } from '../categories/category';
 import { environment } from '../../../environments/environment';
@@ -72,5 +72,17 @@ export class FilmService {
 
     listCategories(): Observable<Category[]> {
         return this.http.get<Category[]>(`${this.baseUrl}/categories`);
+    }
+
+    getFilmInventory(id: number): Observable<FilmInventoryCopy[]> {
+        return this.http.get<FilmInventoryCopy[]>(`${this.baseUrl}/films/${id}/inventory`);
+    }
+
+    addFilmInventory(id: number, input: { store_id: number; qty: number }): Observable<{ created?: number; message?: string }> {
+        return this.http.post<{ created?: number; message?: string }>(`${this.baseUrl}/films/${id}/inventory`, input);
+    }
+
+    deleteInventoryCopy(inventoryId: number): Observable<{ message: string }> {
+        return this.http.delete<{ message: string }>(`${this.baseUrl}/inventory/${inventoryId}`);
     }
 }

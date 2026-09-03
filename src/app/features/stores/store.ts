@@ -50,6 +50,20 @@ export interface StoreStats {
     topFilms: { title: string; rentals: number }[];
 }
 
+export interface StoreComparison {
+    store_id: number;
+    manager: string;
+    address: string;
+    city: string;
+    country: string;
+    inventoryCount: number;
+    staffCount: number;
+    revenue: number;
+    totalRentals: number;
+    activeRentals: number;
+    customersServed: number;
+}
+
 export interface StaffSuggestion {
     staff_id: number;
     first_name: string;

@@ -7,6 +7,8 @@ export interface Stats { films: number; customers: number; rentals: number; inve
 export interface MonthRentals { month: string; count: number; }
 export interface CategoryCount { name: string; count: number; }
 export interface RecentRental { rental_id: number; rental_date: string; customer: string | null; film: string | null; }
+export interface TopFilm { title: string; times_rented: number; }
+export interface CategoryRentals { name: string; rentals: number; }
 
 @Service()
 export class DashboardService {
@@ -17,4 +19,6 @@ export class DashboardService {
     getRentalsPerMonth(): Observable<MonthRentals[]> { return this.http.get<MonthRentals[]>(`${this.baseUrl}/dashboard/rentals-per-month`); }
     getTopCategories(): Observable<CategoryCount[]> { return this.http.get<CategoryCount[]>(`${this.baseUrl}/dashboard/top-categories`); }
     getRecentRentals(): Observable<RecentRental[]> { return this.http.get<RecentRental[]>(`${this.baseUrl}/dashboard/recent-rentals`); }
+    getTopFilms(): Observable<TopFilm[]> { return this.http.get<TopFilm[]>(`${this.baseUrl}/dashboard/top-films`); }
+    getTopFilmsByCategory(): Observable<CategoryRentals[]> { return this.http.get<CategoryRentals[]>(`${this.baseUrl}/dashboard/top-categories-by-rentals`); }
 }

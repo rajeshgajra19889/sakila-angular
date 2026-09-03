@@ -7,6 +7,7 @@ import { CustomerService } from '../customers/customer.service';
 import { Customer } from '../customers/customers.interface';
 import { ToastService } from '../../core/toast/toast.service';
 import { Router } from '@angular/router';
+import { DownloadService } from '../../core/download/download.service';
 
 @Component({
   imports: [],
@@ -20,6 +21,7 @@ export class PaymentsPage implements OnInit {
   private readonly customerService = inject(CustomerService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly download = inject(DownloadService);
 
   protected readonly payments = signal<Payment[]>([]);
   protected readonly total = signal(0);
@@ -150,6 +152,19 @@ export class PaymentsPage implements OnInit {
 
   addPayment() {
     this.router.navigateByUrl('/payments/new');
+  }
+
+  exportCsv() {
+    this.download.exportCsv('/payments/export', {
+      search: this.search() || undefined,
+      customerId: this.customerId() ?? undefined,
+      storeId: this.storeId() ?? undefined,
+      dateFrom: this.dateFrom() || undefined,
+      dateTo: this.dateTo() || undefined,
+    }).subscribe({
+      next: blob => this.download.triggerDownload(blob, 'payments.csv'),
+      error: () => this.toast.show('Failed to export payments', 'error')
+    });
   }
 
   editPayment(id: number) {

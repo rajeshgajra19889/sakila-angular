@@ -6,6 +6,7 @@ import { Store } from '../stores/store';
 import { CustomerService } from '../customers/customer.service';
 import { Customer } from '../customers/customers.interface';
 import { ToastService } from '../../core/toast/toast.service';
+import { DownloadService } from '../../core/download/download.service';
 
 @Component({
     selector: 'app-revenue-page',
@@ -17,6 +18,7 @@ export class RevenuePage implements OnInit {
     private readonly storeService = inject(StoreService);
     private readonly customerService = inject(CustomerService);
     private readonly toast = inject(ToastService);
+    private readonly download = inject(DownloadService);
 
     protected readonly report = signal<RevenueReport | null>(null);
     protected readonly loading = signal(true);
@@ -81,6 +83,18 @@ export class RevenuePage implements OnInit {
         this.dateFrom.set('');
         this.dateTo.set('');
         this.loadReport();
+    }
+
+    exportCsv() {
+        this.download.exportCsv('/revenue/export', {
+            storeId: this.storeId() ?? undefined,
+            customerId: this.customerId() ?? undefined,
+            dateFrom: this.dateFrom() || undefined,
+            dateTo: this.dateTo() || undefined,
+        }).subscribe({
+            next: blob => this.download.triggerDownload(blob, 'revenue-report.csv'),
+            error: () => this.toast.show('Failed to export revenue', 'error')
+        });
     }
 
     barPercent(total: number): number {

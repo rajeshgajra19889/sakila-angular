@@ -2,8 +2,9 @@ import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FilmService } from '../films/film.service';
-import { Film, Language, FilmInput } from '../films/film';
+import { Film, Language, FilmInput, FilmInventoryCopy } from '../films/film';
 import { Category } from '../categories/category';
+import { StoreService } from '../stores/store.service';
 import { ToastService } from '../../core/toast/toast.service';
 
 const RATINGS = ['G', 'PG', 'PG-13', 'R', 'NC-17'] as const;
@@ -20,6 +21,7 @@ export class FilmFormPage implements OnInit {
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
     private readonly filmService = inject(FilmService);
+    private readonly storeService = inject(StoreService);
     private readonly toast = inject(ToastService);
 
     protected readonly mode = signal<'new' | 'edit'>('new');
@@ -45,6 +47,14 @@ export class FilmFormPage implements OnInit {
     protected readonly categories = signal<Category[]>([]);
     protected readonly selectedCategories = signal<number[]>([]);
 
+    protected readonly inventory = signal<FilmInventoryCopy[]>([]);
+    protected readonly stores = signal<{ store_id: number }[]>([]);
+    protected readonly invStoreId = signal<number | null>(null);
+    protected readonly invQty = signal(1);
+    protected readonly invSaving = signal(false);
+    protected readonly invLoading = signal(false);
+    protected readonly invMessage = signal<string | null>(null);
+
     protected readonly titleError = computed(() => this.title().trim() === '');
     protected readonly languageError = computed(() => this.languageId() === null);
     protected readonly formValid = computed(() => !this.titleError() && !this.languageError());
@@ -69,6 +79,7 @@ export class FilmFormPage implements OnInit {
                         next: cats => this.selectedCategories.set(cats.map(c => c.category_id)),
                         error: () => this.toast.show('Failed to load categories', 'error')
                     });
+                    this.loadInventory(Number(id));
                 } else if (rows.length > 0) {
                     this.languageId.set(rows[0].language_id);
                 }
@@ -175,6 +186,90 @@ export class FilmFormPage implements OnInit {
                 this.toast.show(err.error?.message ?? err.message, 'error');
                 done();
             }
+        });
+    }
+
+    private loadInventory(id: number) {
+        this.invLoading.set(true);
+        this.filmService.getFilmInventory(id).subscribe({
+            next: copies => {
+                this.inventory.set(copies);
+                this.invLoading.set(false);
+            },
+            error: () => { this.invLoading.set(false); this.toast.show('Failed to load inventory', 'error'); }
+        });
+        if (this.stores().length === 0) {
+            this.storeService.listStores().subscribe({
+                next: list => {
+                    this.stores.set(list);
+                    if (list.length > 0 && this.invStoreId() === null) this.invStoreId.set(list[0].store_id);
+                },
+                error: () => this.toast.show('Failed to load stores', 'error')
+            });
+        }
+    }
+
+    protected inventoryByStore(): { store_id: number; total: number; available: number; rented: number }[] {
+        const copies = this.inventory();
+        const storeIds = new Set(copies.map(c => c.store_id));
+        return [...storeIds].map(storeId => {
+            const inStore = copies.filter(c => c.store_id === storeId);
+            return {
+                store_id: storeId,
+                total: inStore.length,
+                available: inStore.filter(c => !c.rented).length,
+                rented: inStore.filter(c => c.rented).length
+            };
+        }).sort((a, b) => a.store_id - b.store_id);
+    }
+
+    protected onInvStoreChange(value: string) {
+        this.invStoreId.set(value === '' ? null : Number(value));
+    }
+
+    protected onInvQtyInput(value: string) {
+        const n = Number(value);
+        this.invQty.set(Number.isInteger(n) && n >= 1 ? n : 1);
+    }
+
+    protected inventoryValid(): boolean {
+        return this.invStoreId() !== null && this.invQty() >= 1 && this.invQty() <= 100 && !this.invSaving();
+    }
+
+    protected addCopies() {
+        const id = this.filmId();
+        const storeId = this.invStoreId();
+        if (!id || storeId === null || !this.inventoryValid()) return;
+        this.invSaving.set(true);
+        this.invMessage.set(null);
+        this.filmService.addFilmInventory(id, { store_id: storeId, qty: this.invQty() }).subscribe({
+            next: r => {
+                this.invSaving.set(false);
+                this.toast.show(r.message ?? 'Copies added', 'success');
+                this.invQty.set(1);
+                this.loadInventory(id);
+            },
+            error: err => {
+                this.invSaving.set(false);
+                this.toast.show(err.error?.message ?? err.error?.error ?? 'Failed to add copies', 'error');
+            }
+        });
+    }
+
+    protected removeCopy(inventoryId: number, rented: boolean) {
+        if (rented) {
+            this.toast.show('Cannot remove a copy that is currently rented out', 'error');
+            return;
+        }
+        const id = this.filmId();
+        if (!id) return;
+        if (!confirm('Remove this copy from inventory?')) return;
+        this.filmService.deleteInventoryCopy(inventoryId).subscribe({
+            next: r => {
+                this.toast.show(r.message ?? 'Copy removed', 'success');
+                this.loadInventory(id);
+            },
+            error: err => this.toast.show(err.error?.message ?? err.error?.error ?? 'Failed to remove copy', 'error')
         });
     }
 

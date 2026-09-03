@@ -62,3 +62,14 @@ export interface StaffDetail {
         country_name: string;
     } | null;
 }
+
+export interface StaffPerformance {
+    staff_id: number;
+    name: string;
+    username: string;
+    store_id: number;
+    active: boolean;
+    payments: number;
+    revenue: number;
+    rentals: number;
+}

@@ -24,6 +24,7 @@
         <input type="date" [value]="dateTo()" (input)="onDateTo($any($event.target).value)" />
     </label>
     <a class="link" (click)="clearFilters()">Clear filters</a>
+    <button class="export-btn" (click)="exportCsv()">Export CSV</button>
 </div>
 
 @if (loading()) {

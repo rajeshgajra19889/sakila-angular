@@ -3,6 +3,7 @@
 
     <div class="toolbar">
         <a class="primary" (click)="addPayment()">+ Record Payment</a>
+        <button class="export-btn" (click)="exportCsv()">Export CSV</button>
         <input type="search" placeholder="Search customer or film…" [value]="search()"
             (input)="onSearch($any($event.target).value)" />
         <div class="spacer"></div>

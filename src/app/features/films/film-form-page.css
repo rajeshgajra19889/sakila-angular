@@ -92,3 +92,69 @@
     color: #c0392b;
     margin-bottom: 8px;
 }
+
+.inventory-panel {
+    margin-top: 28px;
+    border-top: 1px solid #e3e6ea;
+    padding-top: 16px;
+    max-width: 640px;
+}
+
+.inventory-panel h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+}
+
+.inv-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+}
+
+.inv-table th, .inv-table td {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f2f5;
+    font-size: 13px;
+}
+
+.inv-table th {
+    background: #f7f9fb;
+    color: #444;
+}
+
+.inv-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.inv-actions select,
+.inv-actions input {
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.inv-actions input {
+    width: 80px;
+}
+
+.inv-actions .primary {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.inv-actions .primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.muted {
+    color: #888;
+}
