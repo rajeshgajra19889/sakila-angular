@@ -19,17 +19,32 @@ export class AddressesPage implements OnInit {
     protected readonly search = signal('');
     protected readonly total = signal(0);
     protected readonly page = signal(1);
-    protected readonly pageSize = 20;
-    protected readonly pageCount = computed(() => this.total() === 0 ? 0 : Math.ceil(this.total() / this.pageSize));
+    protected readonly pageSize = signal(20);
+    protected readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
+    protected readonly pages = computed(() => {
+        const current = this.page();
+        const last = this.totalPages();
+        const start = Math.max(1, Math.min(current - 2, last - 4));
+        const end = Math.min(last, start + 4);
+        const out: number[] = [];
+        for (let i = start; i <= end; i++) out.push(i);
+        return out;
+    });
 
     ngOnInit() { this.load(); }
 
     load() {
         this.loading.set(true);
-        this.addrService.listAddresses({ search: this.search() || undefined, page: this.page(), pageSize: this.pageSize }).subscribe({
+        this.addrService.listAddresses({ search: this.search() || undefined, page: this.page(), pageSize: this.pageSize() }).subscribe({
             next: r => { this.addresses.set(r.items); this.total.set(r.total); this.loading.set(false); },
             error: () => { this.toast.show('Failed to load addresses', 'error'); this.loading.set(false); }
         });
+    }
+
+    goToPage(p: number) {
+        if (p < 1 || p > this.totalPages()) return;
+        this.page.set(p);
+        this.load();
     }
 
     onSearch(value: string) {
@@ -38,8 +53,11 @@ export class AddressesPage implements OnInit {
         this.load();
     }
 
-    prev() { if (this.page() > 1) { this.page.update(p => p - 1); this.load(); } }
-    next() { if (this.page() < this.pageCount()) { this.page.update(p => p + 1); this.load(); } }
+    onPageSizeChange(size: string) {
+        this.pageSize.set(Number(size));
+        this.page.set(1);
+        this.load();
+    }
 
     add() { this.router.navigateByUrl('/addresses/new'); }
     edit(id: number) { this.router.navigateByUrl(`/addresses/${id}/edit`); }
