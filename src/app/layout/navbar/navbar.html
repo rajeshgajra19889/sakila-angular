@@ -1,6 +1,13 @@
 <header class="navbar">
   <span class="logo">Sakila</span>
   <div class="spacer"></div>
+  <button class="theme-toggle" [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'" (click)="theme.toggle()">
+    @if (theme.isDark()) {
+    <span aria-hidden="true">&#9728;</span>
+    } @else {
+    <span aria-hidden="true">&#9790;</span>
+    }
+  </button>
   @if (authService.fullName()) {
   <span class="whoami">{{ authService.fullName() }}</span>
   }

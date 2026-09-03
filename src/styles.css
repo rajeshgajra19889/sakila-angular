@@ -1,1 +1,162 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   Global theme setup
+   - Light theme is the default (:root).
+   - Dark theme is activated via the `dark` class on <html>.
+   - Shared CSS variables drive the chrome (layout shells).
+   - A dark-mode override layer converts the app's component
+     hardcoded colors (white surfaces, light greys, dark text)
+     so every page adapts without editing each component.
+   - Smooth transitions make the switch feel polished.
+   ============================================================ */
+
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f7f9fb;
+  --surface-hover: #fafbfc;
+  --border: #e3e6ea;
+  --border-strong: #ddd;
+  --nav-bg: #1f2937;
+  --text: #111827;
+  --text-body: #333;
+  --muted: #888;
+  --primary: #1976d2;
+  --primary-hover: #1565c0;
+  --primary-rgb: 25, 118, 210;
+  --danger: #c0392b;
+  --success: #16794c;
+  --table-head: #f5f5f5;
+  --table-border: #eee;
+  --input-border: #ccc;
+  --input-bg: #ffffff;
+  --overlay: rgba(0, 0, 0, .45);
+  --shadow: 0 1px 3px rgba(0, 0, 0, .06);
+}
+
+html.dark {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-alt: #263449;
+  --surface-hover: #2b3a52;
+  --border: #334155;
+  --border-strong: #475569;
+  --nav-bg: #0b1120;
+  --text: #f1f5f9;
+  --text-body: #e2e8f0;
+  --muted: #94a3b8;
+  --primary: #3b82f6;
+  --primary-hover: #2f6fe0;
+  --primary-rgb: 59, 130, 246;
+  --danger: #ef6a5b;
+  --success: #34d399;
+  --table-head: #263449;
+  --table-border: #334155;
+  --input-border: #475569;
+  --input-bg: #0f172a;
+  --overlay: rgba(0, 0, 0, .65);
+  --shadow: 0 1px 3px rgba(0, 0, 0, .4);
+}
+
+/* Smooth theme transitions (color/background/border only, not layout) */
+html,
+html *,
+html *::before,
+html *::after {
+  transition: background-color .28s ease, color .28s ease,
+    border-color .28s ease, box-shadow .28s ease;
+}
+
+/* ---- Base page surface ---- */
+body {
+  background: var(--bg);
+  color: var(--text-body);
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---- Chrome: layout shells ---- */
+html.dark .content { background: var(--bg); }
+
+html.dark .sidebar {
+  background: var(--surface);
+  border-right-color: var(--border) !important;
+}
+html.dark .sidebar a { color: var(--text-body); }
+html.dark .sidebar a.active { background: var(--surface-alt); color: var(--text); }
+
+/* ---- Generic / reused colors across feature pages ---- */
+html.dark .card,
+html.dark .panel,
+html.dark table,
+html.dark .modal {
+  background: var(--surface);
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow);
+  color: var(--text-body);
+}
+
+html.dark th { background: var(--table-head) !important; color: var(--text); }
+html.dark td,
+html.dark th {
+  border-color: var(--table-border) !important;
+}
+html.dark tr:hover td,
+html.dark tbody tr:hover { background: var(--surface-hover) !important; }
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-body);
+}
+html.dark input::placeholder { color: var(--muted); }
+
+html.dark .filters,
+html.dark .toolbar.filters {
+  background: var(--surface-alt);
+  border-color: var(--border);
+}
+
+html.dark .muted { color: var(--muted); }
+
+html.dark .modal-backdrop { background: var(--overlay); }
+
+/* Buttons: neutral ones themed, primary/hover switch */
+html.dark button:not(.primary):not(.theme-toggle):not(.logout):not(.tabs button):not(.pagination button) {
+  background: var(--surface-alt);
+  border-color: var(--border-strong);
+  color: var(--text-body);
+}
+html.dark .pagination button { background: var(--surface-alt); border-color: var(--border-strong); color: var(--text-body); }
+html.dark .pagination button.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+html.dark .primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+html.dark .primary:hover { background: var(--primary-hover); }
+
+html.dark a:not(.sidebar a) { color: var(--primary); }
+
+/* Badges */
+html.dark .badge { background: rgba(22, 121, 76, .18); color: var(--success); border-color: rgba(52, 211, 153, .35); }
+html.dark .badge-rented { background: rgba(192, 57, 43, .16); color: var(--danger); border-color: rgba(239, 106, 91, .4); }
+html.dark .badge-held { background: rgba(178, 106, 0, .18); color: #f0b14d; border-color: rgba(240, 177, 77, .4); }
+
+/* Errors */
+html.dark .error,
+html.dark .field-error { color: var(--danger); }
+
+/* Suggestions dropdowns (hold customer picker etc.) */
+html.dark .hold-form .suggestions { border-color: var(--border-strong); }
+html.dark .hold-form .suggestions button { color: var(--text-body); }
+html.dark .hold-form .suggestions button:hover { background: var(--surface-alt); }
+
+/* Bar chart tracks */
+html.dark .bar-track,
+html.dark .cat-track,
+html.dark .rev-track,
+html.dark .rev-track,
+html.dark .bar,
+html.dark .cat-fill { background: var(--surface-alt); }
+html.dark .bar { background: var(--primary); }
+html.dark .cat-fill,
+html.dark .rev-fill { background: var(--primary); }
