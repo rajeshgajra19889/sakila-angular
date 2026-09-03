@@ -1,7 +1,44 @@
 .shell {
   display: flex;
+  min-height: calc(100vh - var(--nav-height, 45px));
 }
+
 .content {
   flex: 1;
   padding: 16px;
+  min-width: 0;
+}
+
+/* Desktop: sidebar is static, always visible */
+.sidebar-wrap {
+  flex-shrink: 0;
+}
+
+.backdrop {
+  display: none;
+}
+
+/* Mobile: sidebar becomes an off-canvas drawer */
+@media (max-width: 768px) {
+  .sidebar-wrap {
+    position: fixed;
+    top: var(--nav-height, 45px);
+    left: 0;
+    bottom: 0;
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+  }
+
+  .sidebar-wrap.open {
+    transform: translateX(0);
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: var(--nav-height, 45px) 0 0 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 50;
+  }
 }

@@ -1,6 +1,11 @@
 <app-navbar></app-navbar>
 <div class="shell">
-  <app-sidebar></app-sidebar>
+  @if (layout.sidebarOpen()) {
+  <div class="backdrop" (click)="layout.closeSidebar()"></div>
+  }
+  <div class="sidebar-wrap" [class.open]="layout.sidebarOpen()">
+    <app-sidebar (navigate)="layout.closeSidebar()"></app-sidebar>
+  </div>
   <main class="content">
     <router-outlet></router-outlet>
   </main>

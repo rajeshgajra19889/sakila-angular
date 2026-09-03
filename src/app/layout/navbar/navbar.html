@@ -1,4 +1,7 @@
 <header class="navbar">
+  <button class="nav-toggle" aria-label="Toggle navigation menu" (click)="layout.toggleSidebar()">
+    <span aria-hidden="true">&#9776;</span>
+  </button>
   <span class="logo">Sakila</span>
   <div class="spacer"></div>
   <button class="theme-toggle" [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'" (click)="theme.toggle()">

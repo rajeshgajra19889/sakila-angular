@@ -3,7 +3,16 @@
   padding: 16px;
   background: var(--surface, #ffffff);
   border-right: 1px solid var(--border-strong, #ddd);
-  min-height: calc(100vh - 45px);
+  min-height: calc(100vh - var(--nav-height, 45px));
+}
+
+/* Mobile: sidebar fills the off-canvas drawer and scrolls if content overflows */
+@media (max-width: 768px) {
+  .sidebar {
+    height: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+  }
 }
 .sidebar a {
   display: block;

@@ -1,20 +1,20 @@
 <nav class="sidebar">
-    <a routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Dashboard</a>
-    <a routerLink="/films" routerLinkActive="active">Films</a>
-    <a routerLink="/actors" routerLinkActive="active">Actors</a>
-    <a routerLink="/customers" routerLinkActive="active">Customers</a>
-    <a routerLink="/rentals" routerLinkActive="active">Rentals</a>
-    <a routerLink="/payments" routerLinkActive="active">Payments</a>
+    <a routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="onNav()">Dashboard</a>
+    <a routerLink="/films" routerLinkActive="active" (click)="onNav()">Films</a>
+    <a routerLink="/actors" routerLinkActive="active" (click)="onNav()">Actors</a>
+    <a routerLink="/customers" routerLinkActive="active" (click)="onNav()">Customers</a>
+    <a routerLink="/rentals" routerLinkActive="active" (click)="onNav()">Rentals</a>
+    <a routerLink="/payments" routerLinkActive="active" (click)="onNav()">Payments</a>
 
-    <a routerLink="/inventory" routerLinkActive="active">Inventory</a>
-    <a routerLink="/reservations" routerLinkActive="active">Reservations</a>
-    <a routerLink="/revenue" routerLinkActive="active">Revenue</a>
-    <a routerLink="/stores" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Stores</a>
-    <a routerLink="/stores/comparison" routerLinkActive="active">Compare Stores</a>
-     <a routerLink="/staffs" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Staff</a>
-    <a routerLink="/staffs/performance" routerLinkActive="active">Staff Performance</a>
-    <a routerLink="/languages" routerLinkActive="active">Languages</a>
-    <a routerLink="/categories" routerLinkActive="active">Categories</a>
-    <a routerLink="/cities" routerLinkActive="active">Cities</a>
-    <a routerLink="/addresses" routerLinkActive="active">Addresses</a>
+    <a routerLink="/inventory" routerLinkActive="active" (click)="onNav()">Inventory</a>
+    <a routerLink="/reservations" routerLinkActive="active" (click)="onNav()">Reservations</a>
+    <a routerLink="/revenue" routerLinkActive="active" (click)="onNav()">Revenue</a>
+    <a routerLink="/stores" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="onNav()">Stores</a>
+    <a routerLink="/stores/comparison" routerLinkActive="active" (click)="onNav()">Compare Stores</a>
+     <a routerLink="/staffs" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="onNav()">Staff</a>
+    <a routerLink="/staffs/performance" routerLinkActive="active" (click)="onNav()">Staff Performance</a>
+    <a routerLink="/languages" routerLinkActive="active" (click)="onNav()">Languages</a>
+    <a routerLink="/categories" routerLinkActive="active" (click)="onNav()">Categories</a>
+    <a routerLink="/cities" routerLinkActive="active" (click)="onNav()">Cities</a>
+    <a routerLink="/addresses" routerLinkActive="active" (click)="onNav()">Addresses</a>
 </nav>

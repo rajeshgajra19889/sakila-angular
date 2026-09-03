@@ -10,6 +10,7 @@
    ============================================================ */
 
 :root {
+  --nav-height: 45px;
   --bg: #ffffff;
   --surface: #ffffff;
   --surface-alt: #f7f9fb;
