@@ -1,17 +1,23 @@
 .sidebar {
   width: 180px;
   padding: 16px;
-  border-right: 1px solid #ddd;
+  background: var(--surface, #ffffff);
+  border-right: 1px solid var(--border-strong, #ddd);
   min-height: calc(100vh - 45px);
 }
 .sidebar a {
   display: block;
   padding: 8px 12px;
-  color: #333;
+  color: var(--text-body, #333);
   text-decoration: none;
   border-radius: 6px;
+  transition: background-color .2s ease, color .2s ease;
+}
+.sidebar a:hover {
+  background: var(--surface-alt, #f3f4f6);
 }
 .sidebar a.active {
-  background: #e5e7eb;
+  background: var(--surface-alt, #e5e7eb);
+  color: var(--text, #111827);
   font-weight: bold;
 }
