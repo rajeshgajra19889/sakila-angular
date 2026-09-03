@@ -6,6 +6,8 @@ import { ReservationService } from '../reservations/reservation.service';
 import { NameSuggestion } from '../reservations/reservation';
 import { CustomerService } from '../customers/customer.service';
 import { ToastService } from '../../core/toast/toast.service';
+import { StoreService } from '../stores/store.service';
+import { Store } from '../stores/store';
 
 @Component({
     selector: 'app-inventory-page',
@@ -18,9 +20,12 @@ export class InventoryPage implements OnInit {
     private readonly inventoryService = inject(InventoryService);
     private readonly reservationService = inject(ReservationService);
     private readonly customerService = inject(CustomerService);
+    private readonly storeService = inject(StoreService);
     private readonly toast = inject(ToastService);
 
     protected readonly view = signal<'list' | 'stock'>('list');
+    protected readonly stores = signal<Store[]>([]);
+    protected readonly storeId = signal<number | null>(null);
     protected readonly items = signal<Inventory[]>([]);
     protected readonly total = signal(0);
     protected readonly page = signal(1);
@@ -80,7 +85,13 @@ export class InventoryPage implements OnInit {
         return out;
     });
 
-    ngOnInit() { this.loadInventory(); }
+    ngOnInit() {
+        this.storeService.listStores().subscribe({
+            next: s => this.stores.set(s),
+            error: () => this.toast.show('Failed to load stores', 'error')
+        });
+        this.loadInventory();
+    }
 
     loadInventory() {
         this.loading.set(true);
@@ -88,6 +99,7 @@ export class InventoryPage implements OnInit {
             page: this.page(),
             pageSize: this.pageSize(),
             search: this.search(),
+            storeId: this.storeId() ?? undefined,
             sortBy: this.sortBy(),
             sortOrder: this.sortOrder()
         };
@@ -147,7 +159,8 @@ export class InventoryPage implements OnInit {
         this.inventoryService.getStockSummary({
             page: this.stockPage(),
             pageSize: this.stockPageSize(),
-            search: this.stockSearch()
+            search: this.stockSearch(),
+            storeId: this.storeId() ?? undefined
         }).subscribe({
             next: page => {
                 this.stock.set(page.items);
@@ -177,6 +190,17 @@ export class InventoryPage implements OnInit {
         this.stockPageSize.set(Number(size));
         this.stockPage.set(1);
         this.loadSummary();
+    }
+
+    onStoreFilterChange(value: string) {
+        this.storeId.set(value === '' || value === 'null' ? null : Number(value));
+        this.page.set(1);
+        this.stockPage.set(1);
+        if (this.view() === 'stock') {
+            this.loadSummary();
+        } else {
+            this.loadInventory();
+        }
     }
 
     addStock() {

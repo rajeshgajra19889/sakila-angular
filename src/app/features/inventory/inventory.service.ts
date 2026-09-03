@@ -12,6 +12,7 @@ export class InventoryService {
     listInventory(query: InventoryQuery): Observable<InventoryPage> {
         let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);
         if (query.search) params = params.set('search', query.search);
+        if (query.storeId) params = params.set('store_id', query.storeId);
         if (query.sortBy) params = params.set('sortBy', query.sortBy);
         if (query.sortOrder) params = params.set('sortOrder', query.sortOrder);
         return this.http.get<InventoryPage>(`${this.baseUrl}/inventory`, { params });
@@ -29,9 +30,10 @@ export class InventoryService {
         return this.http.post<{ inventory_id: number; store_id: number }>(`${this.baseUrl}/inventory/${id}/move`, { store_id: storeId });
     }
 
-    getStockSummary(query: { page: number; pageSize: number; search?: string }): Observable<StockSummaryPage> {
+    getStockSummary(query: { page: number; pageSize: number; search?: string; storeId?: number }): Observable<StockSummaryPage> {
         let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);
         if (query.search) params = params.set('search', query.search);
+        if (query.storeId) params = params.set('store_id', query.storeId);
         return this.http.get<StockSummaryPage>(`${this.baseUrl}/inventory/summary`, { params });
     }
 

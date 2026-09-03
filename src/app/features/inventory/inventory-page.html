@@ -16,6 +16,14 @@
     <div class="toolbar">
         <input type="search" placeholder="Search film…" [value]="search()"
             (input)="onSearch($any($event.target).value)" />
+        <label class="filter">Store
+            <select [value]="storeId()" (change)="onStoreFilterChange($any($event.target).value)">
+                <option [value]="null">All</option>
+                @for (s of stores(); track s.store_id) {
+                <option [value]="s.store_id">Store {{ s.store_id }}</option>
+                }
+            </select>
+        </label>
         <div class="spacer"></div>
         <select (change)="onPageSizeChange($any($event.target).value)">
             <option [selected]="pageSize() === 10">10</option>
@@ -72,6 +80,14 @@
     <div class="toolbar">
         <input type="search" placeholder="Search film…" [value]="stockSearch()"
             (input)="onStockSearch($any($event.target).value)" />
+        <label class="filter">Store
+            <select [value]="storeId()" (change)="onStoreFilterChange($any($event.target).value)">
+                <option [value]="null">All</option>
+                @for (s of stores(); track s.store_id) {
+                <option [value]="s.store_id">Store {{ s.store_id }}</option>
+                }
+            </select>
+        </label>
         <div class="spacer"></div>
         <select (change)="onStockPageSizeChange($any($event.target).value)">
             <option [selected]="stockPageSize() === 10">10</option>

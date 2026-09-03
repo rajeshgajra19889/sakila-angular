@@ -21,6 +21,21 @@
     width: 260px;
 }
 
+.toolbar .filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #333;
+    white-space: nowrap;
+}
+
+.toolbar .filter select {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
 .tabs {
     display: flex;
     gap: 4px;

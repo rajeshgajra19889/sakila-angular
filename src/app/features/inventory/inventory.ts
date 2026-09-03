@@ -51,6 +51,7 @@ export interface InventoryQuery {
     page: number;
     pageSize: number;
     search?: string;
+    storeId?: number;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
 }
