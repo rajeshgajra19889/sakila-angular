@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AddressService } from './address.service';
 import { City } from './cities';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 
 @Component({
     selector: 'app-cities-page',
@@ -12,6 +13,7 @@ import { ToastService } from '../../core/toast/toast.service';
 export class CitiesPage implements OnInit {
     private readonly addrService = inject(AddressService);
     private readonly toast = inject(ToastService);
+    private readonly confirm = inject(ConfirmService);
     private readonly router = inject(Router);
 
     protected readonly cities = signal<City[]>([]);
@@ -62,10 +64,17 @@ export class CitiesPage implements OnInit {
     add() { this.router.navigateByUrl('/cities/new'); }
     edit(id: number) { this.router.navigateByUrl(`/cities/${id}/edit`); }
     delete(id: number) {
-        if (!window.confirm('Delete this city?')) return;
-        this.addrService.deleteCity(id).subscribe({
-            next: () => { this.toast.show('City deleted', 'success'); this.load(); },
-            error: (err) => this.toast.show(err.error?.error ?? err.message, 'error')
+        this.confirm.confirm({
+            title: 'Delete city',
+            message: 'Delete this city?',
+            confirmLabel: 'Delete',
+            danger: true
+        }).then(ok => {
+            if (!ok) return;
+            this.addrService.deleteCity(id).subscribe({
+                next: () => { this.toast.show('City deleted', 'success'); this.load(); },
+                error: (err) => this.toast.show(err.error?.error ?? err.message, 'error')
+            });
         });
     }
 }

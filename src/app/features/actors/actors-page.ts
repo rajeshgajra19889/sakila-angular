@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActorService, ActorQuery } from './actor.service';
 import { Actor, ActorDetail } from './actor';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 
 @Component({
     selector: 'app-actors-page',
@@ -11,6 +12,7 @@ import { ToastService } from '../../core/toast/toast.service';
 export class ActorsPage implements OnInit {
     private readonly actorService = inject(ActorService);
     private readonly toast = inject(ToastService);
+    private readonly confirm = inject(ConfirmService);
 
     protected readonly actors = signal<Actor[]>([]);
     protected readonly total = signal(0);
@@ -128,17 +130,24 @@ export class ActorsPage implements OnInit {
     }
 
     deleteActor(actor: Actor) {
-        if (!window.confirm(`Delete ${actor.first_name} ${actor.last_name}?`)) return;
-        this.actorService.deleteActor(actor.actor_id).subscribe({
-            next: () => {
-                if (this.actors().length === 1 && this.page() > 1) this.goToPage(this.page() - 1);
-                else this.loadActors();
-                this.toast.show(`${actor.first_name} ${actor.last_name} deleted`, 'success');
-            },
-            error: err => {
-                const msg = err.error?.error ?? err.message;
-                this.toast.show(msg, 'error');
-            }
+        this.confirm.confirm({
+            title: 'Delete actor',
+            message: `Delete ${actor.first_name} ${actor.last_name}?`,
+            confirmLabel: 'Delete',
+            danger: true
+        }).then(ok => {
+            if (!ok) return;
+            this.actorService.deleteActor(actor.actor_id).subscribe({
+                next: () => {
+                    if (this.actors().length === 1 && this.page() > 1) this.goToPage(this.page() - 1);
+                    else this.loadActors();
+                    this.toast.show(`${actor.first_name} ${actor.last_name} deleted`, 'success');
+                },
+                error: err => {
+                    const msg = err.error?.error ?? err.message;
+                    this.toast.show(msg, 'error');
+                }
+            });
         });
     }
 

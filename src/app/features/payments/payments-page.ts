@@ -6,6 +6,7 @@ import { Store } from '../stores/store';
 import { CustomerService } from '../customers/customer.service';
 import { Customer } from '../customers/customers.interface';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 import { Router } from '@angular/router';
 import { DownloadService } from '../../core/download/download.service';
 
@@ -20,6 +21,7 @@ export class PaymentsPage implements OnInit {
   private readonly storeService = inject(StoreService);
   private readonly customerService = inject(CustomerService);
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
   private readonly router = inject(Router);
   private readonly download = inject(DownloadService);
 
@@ -172,13 +174,20 @@ export class PaymentsPage implements OnInit {
   }
 
   deletePayment(id: number) {
-    if (!window.confirm('Delete this payment?')) return;
-    this.paymentService.deletePayment(id).subscribe({
-      next: () => {
-        this.toast.show('Payment deleted', 'success');
-        this.loadPayments();
-      },
-      error: (err) => this.toast.show(err.error?.message ?? err.message, 'error')
+    this.confirm.confirm({
+      title: 'Delete payment',
+      message: 'Delete this payment?',
+      confirmLabel: 'Delete',
+      danger: true
+    }).then(ok => {
+      if (!ok) return;
+      this.paymentService.deletePayment(id).subscribe({
+        next: () => {
+          this.toast.show('Payment deleted', 'success');
+          this.loadPayments();
+        },
+        error: (err) => this.toast.show(err.error?.message ?? err.message, 'error')
+      });
     });
   }
 }

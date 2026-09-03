@@ -1,0 +1,14 @@
+@if (confirmService.current(); as c) {
+<div class="confirm-backdrop" (click)="confirmService.resolveCurrent(false)">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+    <h3>{{ c.title }}</h3>
+    <p>{{ c.message }}</p>
+    <div class="confirm-actions">
+      <button class="cancel" (click)="confirmService.resolveCurrent(false)">{{ c.cancelLabel }}</button>
+      <button class="confirm" [class.danger]="c.danger" (click)="confirmService.resolveCurrent(true)">
+        {{ c.confirmLabel }}
+      </button>
+    </div>
+  </div>
+</div>
+}

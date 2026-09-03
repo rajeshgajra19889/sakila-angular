@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { StaffService } from './staff.service';
 import { Staff, StaffQuery } from './staff';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,6 +14,7 @@ import { Router } from '@angular/router';
 export class StaffList implements OnInit {
   private readonly staffService = inject(StaffService);
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
   private readonly router=inject(Router);
 
   protected readonly staffs = signal<Staff[]>([]);
@@ -97,13 +99,20 @@ export class StaffList implements OnInit {
   }
 
   deleteStaff(id: number) {
-    if (!window.confirm('Delete this staff member?')) return;
-    this.staffService.deleteStaff(id).subscribe({
-      next: () => {
-        this.toast.show('Staff deleted', 'success');
-        this.loadStaff();
-      },
-      error: (err) => this.toast.show(err.error?.message ?? err.message, 'error')
+    this.confirm.confirm({
+      title: 'Delete staff member',
+      message: 'Delete this staff member?',
+      confirmLabel: 'Delete',
+      danger: true
+    }).then(ok => {
+      if (!ok) return;
+      this.staffService.deleteStaff(id).subscribe({
+        next: () => {
+          this.toast.show('Staff deleted', 'success');
+          this.loadStaff();
+        },
+        error: (err) => this.toast.show(err.error?.message ?? err.message, 'error')
+      });
     });
   }
 

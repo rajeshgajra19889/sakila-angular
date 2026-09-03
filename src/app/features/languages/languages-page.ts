@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LanguageService } from './language.service';
 import { Language } from './language';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 
 @Component({
     selector: 'app-languages-page',
@@ -12,6 +13,7 @@ import { ToastService } from '../../core/toast/toast.service';
 export class LanguagesPage implements OnInit {
     private readonly langService = inject(LanguageService);
     private readonly toast = inject(ToastService);
+    private readonly confirm = inject(ConfirmService);
     private readonly router = inject(Router);
 
     protected readonly languages = signal<Language[]>([]);
@@ -30,10 +32,17 @@ export class LanguagesPage implements OnInit {
     add() { this.router.navigateByUrl('/languages/new'); }
     edit(id: number) { this.router.navigateByUrl(`/languages/${id}/edit`); }
     delete(id: number) {
-        if (!window.confirm('Delete this language?')) return;
-        this.langService.deleteLanguage(id).subscribe({
-            next: () => { this.toast.show('Language deleted', 'success'); this.load(); },
-            error: (err) => this.toast.show(err.error?.message ?? err.message, 'error')
+        this.confirm.confirm({
+            title: 'Delete language',
+            message: 'Delete this language?',
+            confirmLabel: 'Delete',
+            danger: true
+        }).then(ok => {
+            if (!ok) return;
+            this.langService.deleteLanguage(id).subscribe({
+                next: () => { this.toast.show('Language deleted', 'success'); this.load(); },
+                error: (err) => this.toast.show(err.error?.message ?? err.message, 'error')
+            });
         });
     }
 }

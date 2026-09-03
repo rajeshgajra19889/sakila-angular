@@ -6,6 +6,7 @@ import { Film, Language, FilmInput, FilmInventoryCopy } from '../films/film';
 import { Category } from '../categories/category';
 import { StoreService } from '../stores/store.service';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 
 const RATINGS = ['G', 'PG', 'PG-13', 'R', 'NC-17'] as const;
 const SPECIAL_FEATURES = ['Trailers', 'Commentaries', 'Deleted Scenes', 'Behind the Scenes'] as const;
@@ -23,6 +24,7 @@ export class FilmFormPage implements OnInit {
     private readonly filmService = inject(FilmService);
     private readonly storeService = inject(StoreService);
     private readonly toast = inject(ToastService);
+    private readonly confirm = inject(ConfirmService);
 
     protected readonly mode = signal<'new' | 'edit'>('new');
     protected readonly filmId = signal<number | null>(null);
@@ -263,13 +265,20 @@ export class FilmFormPage implements OnInit {
         }
         const id = this.filmId();
         if (!id) return;
-        if (!confirm('Remove this copy from inventory?')) return;
-        this.filmService.deleteInventoryCopy(inventoryId).subscribe({
-            next: r => {
-                this.toast.show(r.message ?? 'Copy removed', 'success');
-                this.loadInventory(id);
-            },
-            error: err => this.toast.show(err.error?.message ?? err.error?.error ?? 'Failed to remove copy', 'error')
+        this.confirm.confirm({
+            title: 'Remove copy',
+            message: 'Remove this copy from inventory?',
+            confirmLabel: 'Remove',
+            danger: true
+        }).then(ok => {
+            if (!ok) return;
+            this.filmService.deleteInventoryCopy(inventoryId).subscribe({
+                next: r => {
+                    this.toast.show(r.message ?? 'Copy removed', 'success');
+                    this.loadInventory(id);
+                },
+                error: err => this.toast.show(err.error?.message ?? err.error?.error ?? 'Failed to remove copy', 'error')
+            });
         });
     }
 

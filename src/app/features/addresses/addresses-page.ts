@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AddressService } from './address.service';
 import { Address } from './address';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 
 @Component({
     selector: 'app-addresses-page',
@@ -12,6 +13,7 @@ import { ToastService } from '../../core/toast/toast.service';
 export class AddressesPage implements OnInit {
     private readonly addrService = inject(AddressService);
     private readonly toast = inject(ToastService);
+    private readonly confirm = inject(ConfirmService);
     private readonly router = inject(Router);
 
     protected readonly addresses = signal<Address[]>([]);
@@ -62,10 +64,17 @@ export class AddressesPage implements OnInit {
     add() { this.router.navigateByUrl('/addresses/new'); }
     edit(id: number) { this.router.navigateByUrl(`/addresses/${id}/edit`); }
     delete(id: number) {
-        if (!window.confirm('Delete this address?')) return;
-        this.addrService.deleteAddress(id).subscribe({
-            next: () => { this.toast.show('Address deleted', 'success'); this.load(); },
-            error: (err) => this.toast.show(err.error?.error ?? err.message, 'error')
+        this.confirm.confirm({
+            title: 'Delete address',
+            message: 'Delete this address?',
+            confirmLabel: 'Delete',
+            danger: true
+        }).then(ok => {
+            if (!ok) return;
+            this.addrService.deleteAddress(id).subscribe({
+                next: () => { this.toast.show('Address deleted', 'success'); this.load(); },
+                error: (err) => this.toast.show(err.error?.error ?? err.message, 'error')
+            });
         });
     }
 }

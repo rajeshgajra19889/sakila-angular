@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { FilmService, FilmQuery } from './film.service';
 import { Film } from './film';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 import { forkJoin } from 'rxjs';
 import { Actor } from '../actors/actor';
 
@@ -16,6 +17,7 @@ import { Actor } from '../actors/actor';
 export class FilmsPage implements OnInit {
     private readonly filmService = inject(FilmService);
     private readonly toast = inject(ToastService);
+    private readonly confirm = inject(ConfirmService);
 
     protected readonly films = signal<Film[]>([]);
     protected readonly total = signal(0);
@@ -130,17 +132,24 @@ export class FilmsPage implements OnInit {
     }
 
     deleteFilm(film: Film) {
-        if (!window.confirm(`Delete '${film.title}'?`)) return;
-        this.filmService.deleteFilm(film.film_id).subscribe({
-            next: () => {
-                if (this.films().length === 1 && this.page() > 1) {
-                    this.goToPage(this.page() - 1);
-                } else {
-                    this.loadFilms();
-                }
-                this.toast.show(`'${film.title}' deleted`, 'success');
-            },
-            error: err => this.toast.show(err.message, 'error')
+        this.confirm.confirm({
+            title: 'Delete film',
+            message: `Delete '${film.title}'?`,
+            confirmLabel: 'Delete',
+            danger: true
+        }).then(ok => {
+            if (!ok) return;
+            this.filmService.deleteFilm(film.film_id).subscribe({
+                next: () => {
+                    if (this.films().length === 1 && this.page() > 1) {
+                        this.goToPage(this.page() - 1);
+                    } else {
+                        this.loadFilms();
+                    }
+                    this.toast.show(`'${film.title}' deleted`, 'success');
+                },
+                error: err => this.toast.show(err.message, 'error')
+            });
         });
     }
 

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { StoreService } from './store.service';
 import { Store } from './store';
 import { ToastService } from '../../core/toast/toast.service';
+import { ConfirmService } from '../../core/confirm/confirm.service';
 
 @Component({
     selector: 'app-stores-page',
@@ -14,6 +15,7 @@ export class StoresPage implements OnInit {
     private readonly router = inject(Router);
     private readonly storeService = inject(StoreService);
     private readonly toast = inject(ToastService);
+    private readonly confirm = inject(ConfirmService);
 
     protected readonly stores = signal<Store[]>([]);
     protected readonly filter = signal('');
@@ -76,13 +78,20 @@ export class StoresPage implements OnInit {
     }
 
     remove(s: Store) {
-        if (!window.confirm(`Delete store ${s.store_id} (${s.address.address}, ${s.address.city_name})? Only stores with no inventory, staff or waitlist can be deleted.`)) return;
-        this.storeService.deleteStore(s.store_id).subscribe({
-            next: () => {
-                this.toast.show(`Store ${s.store_id} deleted`, 'success');
-                this.load();
-            },
-            error: err => this.toast.show(err.error?.error ?? err.message, 'error')
+        this.confirm.confirm({
+            title: 'Delete store',
+            message: `Delete store ${s.store_id} (${s.address.address}, ${s.address.city_name})? Only stores with no inventory, staff or waitlist can be deleted.`,
+            confirmLabel: 'Delete',
+            danger: true
+        }).then(ok => {
+            if (!ok) return;
+            this.storeService.deleteStore(s.store_id).subscribe({
+                next: () => {
+                    this.toast.show(`Store ${s.store_id} deleted`, 'success');
+                    this.load();
+                },
+                error: err => this.toast.show(err.error?.error ?? err.message, 'error')
+            });
         });
     }
 }
