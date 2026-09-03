@@ -3,6 +3,7 @@ import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Film, TopRentedFilm, Page, FilmInput, Language } from './film';
 import { Actor } from '../actors/actor';
+import { Category } from '../categories/category';
 import { environment } from '../../../environments/environment';
 
 
@@ -59,5 +60,17 @@ export class FilmService {
 
     setFilmActors(id: number, actorIds: number[]): Observable<Actor[]> {
         return this.http.put<Actor[]>(`${this.baseUrl}/films/${id}/actors`, { actor_ids: actorIds });
+    }
+
+    getFilmCategories(id: number): Observable<Category[]> {
+        return this.http.get<Category[]>(`${this.baseUrl}/films/${id}/categories`);
+    }
+
+    setFilmCategories(id: number, categoryIds: number[]): Observable<Category[]> {
+        return this.http.put<Category[]>(`${this.baseUrl}/films/${id}/categories`, { category_ids: categoryIds });
+    }
+
+    listCategories(): Observable<Category[]> {
+        return this.http.get<Category[]>(`${this.baseUrl}/categories`);
     }
 }

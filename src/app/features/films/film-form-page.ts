@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FilmService } from '../films/film.service';
 import { Film, Language, FilmInput } from '../films/film';
+import { Category } from '../categories/category';
 import { ToastService } from '../../core/toast/toast.service';
 
 const RATINGS = ['G', 'PG', 'PG-13', 'R', 'NC-17'] as const;
@@ -41,11 +42,18 @@ export class FilmFormPage implements OnInit {
     protected readonly ratings = RATINGS;
     protected readonly specialFeaturesOptions = SPECIAL_FEATURES;
 
+    protected readonly categories = signal<Category[]>([]);
+    protected readonly selectedCategories = signal<number[]>([]);
+
     protected readonly titleError = computed(() => this.title().trim() === '');
     protected readonly languageError = computed(() => this.languageId() === null);
     protected readonly formValid = computed(() => !this.titleError() && !this.languageError());
 
     ngOnInit() {
+        this.filmService.listCategories().subscribe({
+            next: rows => this.categories.set(rows),
+            error: () => this.toast.show('Failed to load categories', 'error')
+        });
         this.filmService.getLanguages().subscribe({
             next: rows => {
                 this.languages.set(rows);
@@ -56,6 +64,10 @@ export class FilmFormPage implements OnInit {
                     this.filmService.getFilm(Number(id)).subscribe({
                         next: f => this.loadEdit(f),
                         error: err => this.loadError.set(err.error?.error ?? err.message)
+                    });
+                    this.filmService.getFilmCategories(Number(id)).subscribe({
+                        next: cats => this.selectedCategories.set(cats.map(c => c.category_id)),
+                        error: () => this.toast.show('Failed to load categories', 'error')
                     });
                 } else if (rows.length > 0) {
                     this.languageId.set(rows[0].language_id);
@@ -103,6 +115,16 @@ export class FilmFormPage implements OnInit {
         }
     }
 
+    toggleCategory(id: number, checked: boolean) {
+        if (checked) {
+            if (!this.selectedCategories().includes(id)) {
+                this.selectedCategories.update(list => [...list, id]);
+            }
+        } else {
+            this.selectedCategories.update(list => list.filter(x => x !== id));
+        }
+    }
+
     submit() {
         if (!this.formValid() || this.saving()) return;
         this.saving.set(true);
@@ -124,13 +146,34 @@ export class FilmFormPage implements OnInit {
             : this.filmService.createFilm(input);
 
         action.subscribe({
-            next: () => {
-                this.toast.show(this.mode() === 'edit' ? 'Film updated' : 'Film created', 'success');
-                this.router.navigateByUrl('/films');
+            next: (film) => {
+                const id = this.mode() === 'edit' ? this.filmId()! : film.film_id;
+                this.saveCategories(id, () => {
+                    this.toast.show(this.mode() === 'edit' ? 'Film updated' : 'Film created', 'success');
+                    this.router.navigateByUrl('/films');
+                });
             },
             error: err => {
                 this.saving.set(false);
                 this.toast.show(err.error?.message ?? err.message, 'error');
+            }
+        });
+    }
+
+    private saveCategories(id: number, done: () => void) {
+        const ids = this.selectedCategories();
+        if (ids.length === 0) {
+            this.filmService.setFilmCategories(id, []).subscribe({
+                next: () => done(),
+                error: () => { done(); }
+            });
+            return;
+        }
+        this.filmService.setFilmCategories(id, ids).subscribe({
+            next: () => done(),
+            error: err => {
+                this.toast.show(err.error?.message ?? err.message, 'error');
+                done();
             }
         });
     }

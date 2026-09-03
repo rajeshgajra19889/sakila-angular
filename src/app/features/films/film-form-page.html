@@ -76,6 +76,18 @@
                 </label>
                 }
             </div>
+
+            <label>Categories</label>
+            <div class="checkbox-group">
+                @for (c of categories(); track c.category_id) {
+                <label class="checkbox">
+                    <input type="checkbox"
+                        [checked]="selectedCategories().includes(c.category_id)"
+                        (change)="toggleCategory(c.category_id, $any($event.target).checked)" />
+                    {{ c.name }}
+                </label>
+                }
+            </div>
         </div>
 
         <div class="form-actions">
